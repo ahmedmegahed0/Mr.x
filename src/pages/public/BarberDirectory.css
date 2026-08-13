@@ -1,0 +1,249 @@
+.barber-directory {
+  width: 100%;
+}
+
+.directory-hero {
+  padding: 6rem 2rem 4rem;
+  background: radial-gradient(circle at 50% 100%, rgba(169, 139, 98, 0.08) 0%, transparent 60%);
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-content h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
+  font-weight: 500;
+  color: #F8F5F2;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+
+.hero-content p {
+  color: #A39C93;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.directory-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  padding-bottom: 6rem;
+}
+
+.barbers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2.5rem;
+}
+
+.barber-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(169, 139, 98, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.barber-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(169, 139, 98, 0.3);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+.barber-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/5;
+  background-color: #151311;
+  overflow: hidden;
+}
+
+.barber-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.barber-card:hover .barber-image {
+  transform: scale(1.05);
+}
+
+.barber-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 4rem;
+  color: #A98B62;
+  background: linear-gradient(135deg, #1a1816 0%, #0B0A09 100%);
+}
+
+.unavailable-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(11, 10, 9, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unavailable-overlay span {
+  background: rgba(0, 0, 0, 0.6);
+  color: #F8F5F2;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.barber-card-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.barber-card-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: #F8F5F2;
+  margin-bottom: 0.5rem;
+}
+
+.barber-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.active {
+  background-color: #4CAF50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+}
+
+.status-dot.inactive {
+  background-color: #E85F5F;
+}
+
+.status-text {
+  font-size: 0.85rem;
+  color: #A39C93;
+}
+
+.btn-book {
+  margin-top: auto;
+  width: 100%;
+  padding: 0.85rem;
+  background: transparent;
+  color: #A98B62;
+  border: 1px solid #A98B62;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-book:hover:not(:disabled) {
+  background: #A98B62;
+  color: #0B0A09;
+}
+
+.btn-book:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Skeleton Loading */
+.skeleton .skeleton-image {
+  width: 100%;
+  aspect-ratio: 4/5;
+  background: #1a1816;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton .skeleton-content {
+  padding: 1.5rem;
+}
+
+.skeleton-line {
+  background: #1a1816;
+  border-radius: 4px;
+  height: 20px;
+  margin-bottom: 1rem;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-line.title {
+  width: 60%;
+  height: 24px;
+}
+
+.skeleton-line.text {
+  width: 40%;
+  height: 14px;
+  margin-bottom: 2rem;
+}
+
+.skeleton-button {
+  background: #1a1816;
+  height: 40px;
+  border-radius: 8px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 0.3; }
+  100% { opacity: 0.6; }
+}
+
+.directory-error, .directory-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.directory-error .error-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.directory-error p {
+  color: #E85F5F;
+  font-size: 1.1rem;
+}
+
+.directory-empty p {
+  color: #A39C93;
+  font-size: 1.1rem;
+}

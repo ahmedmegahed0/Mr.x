@@ -43,7 +43,7 @@ export const verifyCode = async (email: string, code: string): Promise<TokenResp
  * GET /api/Auth/google-login?returnUrl={encodedCallbackUrl}
  */
 export const getGoogleLoginUrl = (returnUrl: string): string => {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://barbergm.runasp.net';
   return `${baseUrl}/api/Auth/google-login?returnUrl=${encodeURIComponent(returnUrl)}`;
 };
 

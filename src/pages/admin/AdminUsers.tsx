@@ -1,0 +1,219 @@
+import React, { useEffect, useState } from 'react';
+import { getUsers, blockUser, unblockUser, UserDTO, UsersFilterParams } from '../../api/admin.api';
+import './AdminUsers.css';
+
+export default function AdminUsers() {
+  const [users, setUsers] = useState<UserDTO[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  const [filters, setFilters] = useState<UsersFilterParams>({
+    pageNumber: 1,
+    pageSize: 10,
+    searchTerm: '',
+    isActive: '',
+  });
+
+  const fetchUsers = async (currentFilters: UsersFilterParams) => {
+    setIsLoading(true);
+    setFetchError(null);
+    try {
+      const cleanFilters = Object.fromEntries(
+        Object.entries(currentFilters).filter(([_, v]) => v !== '')
+      );
+      
+      const response = await getUsers(cleanFilters);
+      setUsers(response.items);
+      setTotalCount(response.totalCount);
+      setTotalPages(response.totalPages);
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+      setUsers([]);
+      setFetchError('Server is currently unreachable. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers(filters);
+  }, [filters.pageNumber, filters.pageSize]);
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleApplyFilters = () => {
+    setFilters(prev => ({ ...prev, pageNumber: 1 }));
+    fetchUsers({ ...filters, pageNumber: 1 });
+  };
+
+  const handleClearFilters = () => {
+    const cleared = { pageNumber: 1, pageSize: 10, searchTerm: '', isActive: '' };
+    setFilters(cleared);
+    fetchUsers(cleared);
+  };
+
+  const handlePrevPage = () => {
+    if (filters.pageNumber! > 1) {
+      setFilters(prev => ({ ...prev, pageNumber: prev.pageNumber! - 1 }));
+    }
+  };
+
+  const handleNextPage = () => {
+    if (filters.pageNumber! < totalPages) {
+      setFilters(prev => ({ ...prev, pageNumber: prev.pageNumber! + 1 }));
+    }
+  };
+
+  const handleToggleBlock = async (user: UserDTO) => {
+    const action = user.isActive ? 'block' : 'unblock';
+    const confirmMessage = `Are you sure you want to ${action} user ${user.fullName}?`;
+    
+    if (window.confirm(confirmMessage)) {
+      try {
+        if (user.isActive) {
+          await blockUser(user.id);
+        } else {
+          await unblockUser(user.id);
+        }
+        // Refresh current page
+        fetchUsers(filters);
+      } catch (error) {
+        console.error(`Failed to ${action} user`, error);
+        alert(`Failed to ${action} user. Please try again.`);
+      }
+    }
+  };
+
+  return (
+    <div className="admin-users">
+      <header className="admin-page-header">
+        <h1>Users Management</h1>
+      </header>
+
+      <div className="filters-bar">
+        <div className="filter-group" style={{ flex: 1 }}>
+          <label>Search (Name or Email)</label>
+          <input 
+            type="text" 
+            name="searchTerm" 
+            placeholder="e.g. John Doe"
+            value={filters.searchTerm || ''} 
+            onChange={handleFilterChange} 
+            onKeyDown={(e) => e.key === 'Enter' && handleApplyFilters()}
+          />
+        </div>
+        
+        <div className="filter-group">
+          <label>Status</label>
+          <select name="isActive" value={filters.isActive?.toString() || ''} onChange={(e) => { handleFilterChange(e); setTimeout(() => fetchUsers({ ...filters, isActive: e.target.value, pageNumber: 1 }), 0); }}>
+            <option value="">All Users</option>
+            <option value="true">Active</option>
+            <option value="false">Blocked</option>
+          </select>
+        </div>
+
+        <button className="btn-clear-filters" onClick={handleClearFilters}>
+          Clear Filters
+        </button>
+      </div>
+
+      <div className="table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Created Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="skeleton-row">
+                  <td><div className="skeleton-cell" style={{ width: '40px' }}></div></td>
+                  <td><div className="skeleton-cell" style={{ width: '120px' }}></div></td>
+                  <td><div className="skeleton-cell" style={{ width: '150px' }}></div></td>
+                  <td><div className="skeleton-cell" style={{ width: '100px' }}></div></td>
+                  <td><div className="skeleton-cell" style={{ width: '100px' }}></div></td>
+                  <td><div className="skeleton-cell" style={{ width: '60px' }}></div></td>
+                  <td><div className="skeleton-cell" style={{ width: '80px' }}></div></td>
+                </tr>
+              ))
+            ) : fetchError ? (
+              <tr>
+                <td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: '#EF5350', background: 'rgba(239, 83, 80, 0.05)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.5rem' }}>⚠️</span>
+                    <span style={{ fontWeight: '500' }}>{fetchError}</span>
+                  </div>
+                </td>
+              </tr>
+            ) : users.length > 0 ? (
+              users.map((user) => (
+                <tr key={user.id}>
+                  <td>#{user.id}</td>
+                  <td>{user.fullName}</td>
+                  <td>{user.email}</td>
+                  <td>{user.phone || '-'}</td>
+                  <td>{new Date(user.createdDate).toLocaleDateString()}</td>
+                  <td>
+                    <span className={`status-badge ${user.isActive ? 'active' : 'blocked'}`}>
+                      {user.isActive ? 'Active' : 'Blocked'}
+                    </span>
+                  </td>
+                  <td>
+                    <button 
+                      className={`btn-action ${user.isActive ? 'btn-block' : 'btn-unblock'}`}
+                      onClick={() => handleToggleBlock(user)}
+                    >
+                      {user.isActive ? 'Block' : 'Unblock'}
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: '#8C867E' }}>
+                  No users found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+        {!isLoading && totalCount > 0 && (
+          <div className="pagination-container">
+            <div className="pagination-info">
+              Showing {(filters.pageNumber! - 1) * filters.pageSize! + 1} - {Math.min(filters.pageNumber! * filters.pageSize!, totalCount)} of {totalCount}
+            </div>
+            <div className="pagination-controls">
+              <button 
+                className="btn-page" 
+                onClick={handlePrevPage} 
+                disabled={filters.pageNumber! <= 1}
+              >
+                Prev
+              </button>
+              <button 
+                className="btn-page" 
+                onClick={handleNextPage} 
+                disabled={filters.pageNumber! >= totalPages}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

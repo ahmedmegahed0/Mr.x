@@ -1,0 +1,77 @@
+.public-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #0B0A09;
+  color: #F8F5F2;
+  font-family: 'Inter', sans-serif;
+}
+
+.public-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(11, 10, 9, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(169, 139, 98, 0.1);
+  padding: 1.25rem 2rem;
+}
+
+.public-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.public-header .logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #A98B62;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.public-header .logo:hover {
+  opacity: 0.8;
+}
+
+.btn-auth {
+  background: transparent;
+  color: #F8F5F2;
+  border: 1px solid rgba(169, 139, 98, 0.3);
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-auth:hover {
+  background: rgba(169, 139, 98, 0.1);
+  border-color: #A98B62;
+  color: #A98B62;
+}
+
+.public-main {
+  flex: 1;
+  width: 100%;
+}
+
+.public-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 3rem 2rem;
+  text-align: center;
+  color: rgba(248, 245, 242, 0.5);
+  font-size: 0.9rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}

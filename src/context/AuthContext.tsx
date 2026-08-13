@@ -22,6 +22,7 @@ export interface PendingBooking {
 export interface AuthContextValue {
   tokens: TokenResponseDTO | null;
   isAuthenticated: boolean;
+  userRole: string | null;
   isLoggingOut: boolean;
   handleLoginSuccess: (tokenData: TokenResponseDTO) => void;
   handleLogout: () => Promise<void>;
@@ -37,8 +38,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [tokens, setTokens] = useState<TokenResponseDTO | null>(() => loadTokens());
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  /** Derived: true when we have a valid access token */
   const isAuthenticated = Boolean(tokens?.accessToken);
+
+  /** Extract role from JWT token */
+  const userRole = useMemo(() => {
+    if (!tokens?.accessToken) return null;
+    try {
+      const payloadBase64 = tokens.accessToken.split('.')[1];
+      const decodedJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'));
+      const decoded = JSON.parse(decodedJson);
+      // ASP.NET Core uses this specific claim for roles by default
+      return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || decoded.role || null;
+    } catch (e) {
+      console.error('Failed to parse JWT payload', e);
+      return null;
+    }
+  }, [tokens?.accessToken]);
 
   /**
    * Called after successful OTP verification or Google OAuth callback.
@@ -121,12 +136,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       tokens,
       isAuthenticated,
+      userRole,
       isLoggingOut,
       handleLoginSuccess,
       handleLogout,
       updateProfilePictureUrl,
     }),
-    [tokens, isAuthenticated, isLoggingOut, handleLoginSuccess, handleLogout, updateProfilePictureUrl]
+    [tokens, isAuthenticated, userRole, isLoggingOut, handleLoginSuccess, handleLogout, updateProfilePictureUrl]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

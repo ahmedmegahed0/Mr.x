@@ -30,7 +30,7 @@ export const clearTokens = (): void => {
 // ─── Axios Instance ─────────────────────────────────────────────
 const axiosInstance = axios.create({
   // Base URL: Process via configured API Base URL environment variable or constant
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://barbergm.runasp.net',
   headers: { 'Content-Type': 'application/json' },
   timeout: 15_000,
 });
