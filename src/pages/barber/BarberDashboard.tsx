@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getBarberBookings, BarberBookingDTO } from '../../api/barbers.api';
 import './BarberDashboard.css';
 

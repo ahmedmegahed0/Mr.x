@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './BarberLayout.css';
 
 export default function BarberLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { handleLogout, tokens } = useAuth();
+  const { handleLogout } = useAuth();
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
