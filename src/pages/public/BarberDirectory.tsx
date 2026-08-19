@@ -26,10 +26,12 @@ export default function BarberDirectory() {
 
   return (
     <div className="barber-directory">
+      {/* Cinematic Hero */}
       <div className="directory-hero">
         <div className="hero-content">
+          <span className="directory-eyebrow">Meet The Masters</span>
           <h1>Master Barbers</h1>
-          <p>Select your preferred barber to view their availability and book an appointment.</p>
+          <p>Select your preferred craftsman to view their availability and book your next premium grooming session.</p>
         </div>
       </div>
 
@@ -39,11 +41,6 @@ export default function BarberDirectory() {
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="barber-card skeleton">
                 <div className="skeleton-image"></div>
-                <div className="skeleton-content">
-                  <div className="skeleton-line title"></div>
-                  <div className="skeleton-line text"></div>
-                  <div className="skeleton-button"></div>
-                </div>
               </div>
             ))}
           </div>
@@ -55,36 +52,58 @@ export default function BarberDirectory() {
         ) : barbers.length > 0 ? (
           <div className="barbers-grid">
             {barbers.map(barber => (
-              <div className="barber-card" key={barber.id}>
+              <div 
+                className="barber-card" 
+                key={barber.id}
+                onClick={() => {
+                  if (barber.acceptingBookings) {
+                    navigate(`/barbers/${barber.id}`);
+                  }
+                }}
+              >
+                {/* Background Image */}
                 <div className="barber-image-wrapper">
                   {barber.profilePictureUrl ? (
-                    <img src={barber.profilePictureUrl} alt={barber.fullName} className="barber-image" />
+                    <img 
+                      src={barber.profilePictureUrl} 
+                      alt={barber.fullName} 
+                      className="barber-image" 
+                      draggable={false}
+                    />
                   ) : (
                     <div className="barber-image-placeholder">
                       {barber.fullName.charAt(0)}
                     </div>
                   )}
+                  
                   {!barber.acceptingBookings && (
                     <div className="unavailable-overlay">
-                      <span>Currently Unavailable</span>
+                      <span>Fully Booked</span>
                     </div>
                   )}
                 </div>
                 
+                {/* Overlay Content */}
                 <div className="barber-card-content">
                   <h2>{barber.fullName}</h2>
+                  <p className="barber-role">Master Barber</p>
+                  
                   <div className="barber-status">
                     <span className={`status-dot ${barber.acceptingBookings ? 'active' : 'inactive'}`}></span>
                     <span className="status-text">
-                      {barber.acceptingBookings ? 'Accepting Bookings' : 'Fully Booked'}
+                      {barber.acceptingBookings ? 'Available Today' : 'Unavailable'}
                     </span>
                   </div>
+
                   <button 
                     className="btn-book"
-                    onClick={() => navigate(`/barbers/${barber.id}`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/barbers/${barber.id}`);
+                    }}
                     disabled={!barber.acceptingBookings}
                   >
-                    View Profile & Book
+                    BOOK APPOINTMENT &rarr;
                   </button>
                 </div>
               </div>

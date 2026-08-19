@@ -24,12 +24,33 @@ export default function AdminServices() {
     setIsLoading(true);
     setFetchError(null);
     try {
-      const data = await getAdminServices();
-      setServices(data);
-    } catch (error) {
+      const rawData = await getAdminServices() as any;
+      const extractArray = (obj: any): any[] => {
+        if (!obj) return [];
+        if (Array.isArray(obj)) return obj;
+        if (obj.$values && Array.isArray(obj.$values)) return obj.$values;
+        if (obj.items) return extractArray(obj.items);
+        if (obj.Items) return extractArray(obj.Items);
+        if (obj.data) return extractArray(obj.data);
+        if (obj.Data) return extractArray(obj.Data);
+        if (obj.result) return extractArray(obj.result);
+        if (obj.Result) return extractArray(obj.Result);
+        return [];
+      };
+      
+      const mappedServices = extractArray(rawData).map((s: any) => ({
+        id: s.id ?? s.Id,
+        name: s.name ?? s.Name,
+        description: s.description ?? s.Description ?? '',
+        price: s.price ?? s.Price ?? 0,
+        isActive: s.isActive ?? s.IsActive ?? true,
+      }));
+      
+      setServices(mappedServices);
+    } catch (error: any) {
       console.error('Failed to fetch services:', error);
       setServices([]);
-      setFetchError('Server is currently unreachable. Please try again later.');
+      setFetchError(error.response?.data?.message || error.message || 'Server is currently unreachable. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -85,12 +106,16 @@ export default function AdminServices() {
       return;
     }
 
-    const payload = {
+    const payload: any = {
       name: name.trim(),
       description: description.trim() || undefined,
       price: parsedPrice,
       isActive
     };
+
+    if (editingService) {
+      payload.id = editingService.id;
+    }
 
     try {
       if (editingService) {
@@ -107,7 +132,21 @@ export default function AdminServices() {
       if (error.code === 'ERR_NETWORK') {
         showToast('Service is currently unavailable. Please try again later.', 'error');
       } else {
-        showToast(error?.response?.data?.message || 'Failed to save service', 'error');
+        const resData = error.response?.data;
+        let errMsg = 'Failed to save service';
+        if (typeof resData === 'string' && resData.trim() !== '') {
+           errMsg = resData;
+        } else if (resData?.message) {
+           errMsg = resData.message;
+        } else if (resData?.title) {
+           // .NET Problem Details
+           errMsg = resData.title;
+           if (resData.errors) {
+              const firstErr = Object.values(resData.errors)[0] as string[];
+              if (firstErr && firstErr.length > 0) errMsg += ': ' + firstErr[0];
+           }
+        }
+        showToast(errMsg, 'error');
       }
     }
   };
@@ -125,7 +164,12 @@ export default function AdminServices() {
         } else if (axios.isAxiosError(error) && error.response?.status === 409) {
           showToast(error.response.data?.message || 'Cannot delete service because it is currently linked to existing bookings.', 'error');
         } else {
-          showToast('Failed to delete service.', 'error');
+          const apiMessage = error.response?.data?.message || error.response?.data;
+          let finalMsg = 'Failed to delete service. It may be linked to existing bookings. Please edit and set it to Inactive instead.';
+          if (typeof apiMessage === 'string' && apiMessage.trim() !== '') {
+            finalMsg = apiMessage;
+          }
+          showToast(finalMsg, 'error');
         }
       }
     }

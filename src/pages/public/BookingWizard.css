@@ -1,0 +1,316 @@
+/* 
+  BookingWizard.css
+  Dark Luxury Aesthetic
+*/
+
+.wizard-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.wizard-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #151311;
+  border: 1px solid rgba(169, 139, 98, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  color: #EDE7DC;
+}
+
+.wizard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.wizard-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #A98B62;
+  margin: 0;
+}
+
+.wizard-header p {
+  color: #8C867E;
+  margin: 0.5rem 0 2rem;
+}
+
+.wizard-progress {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.progress-step {
+  width: 40px;
+  height: 6px;
+  background-color: #201C18;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active {
+  background-color: #A98B62;
+}
+
+.wizard-body {
+  min-height: 300px;
+}
+
+/* Step 1: Services */
+.services-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.service-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  background-color: #201C18;
+  border: 1px solid rgba(169, 139, 98, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.service-card:hover {
+  border-color: rgba(169, 139, 98, 0.5);
+}
+
+.service-card.selected {
+  background-color: rgba(169, 139, 98, 0.1);
+  border-color: #A98B62;
+}
+
+.service-info h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  color: #EDE7DC;
+}
+
+.service-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #8C867E;
+}
+
+.service-price {
+  font-weight: 600;
+  color: #A98B62;
+  margin-right: 1rem;
+  margin-left: auto;
+}
+
+.service-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #8C867E;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-card.selected .service-checkbox {
+  background-color: #A98B62;
+  border-color: #A98B62;
+}
+
+.check-mark {
+  color: #0B0A09;
+  font-weight: bold;
+}
+
+.step-summary {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(169, 139, 98, 0.15);
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  color: #EDE7DC;
+}
+
+/* Step 2: Date & Time */
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  color: #8C867E;
+  font-size: 0.9rem;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  background-color: #201C18;
+  border: 1px solid rgba(169, 139, 98, 0.2);
+  border-radius: 6px;
+  color: #EDE7DC;
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #A98B62;
+  box-shadow: 0 0 0 2px rgba(169, 139, 98, 0.1);
+}
+
+.slots-container {
+  margin-top: 1.5rem;
+}
+
+.slots-container label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #8C867E;
+  font-size: 0.9rem;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.75rem;
+}
+
+.slot-btn {
+  padding: 0.75rem;
+  background-color: #201C18;
+  border: 1px solid rgba(169, 139, 98, 0.2);
+  border-radius: 6px;
+  color: #EDE7DC;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.slot-btn:hover {
+  border-color: #A98B62;
+}
+
+.slot-btn.selected {
+  background-color: #A98B62;
+  color: #0B0A09;
+  border-color: #A98B62;
+}
+
+.no-slots {
+  color: #EF5350;
+  font-style: italic;
+}
+
+/* Step 4: Summary */
+.summary-card {
+  background-color: #201C18;
+  border: 1px solid rgba(169, 139, 98, 0.15);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.summary-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary-section h3 {
+  color: #A98B62;
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+}
+
+.summary-section p {
+  margin: 0.5rem 0;
+  color: #EDE7DC;
+}
+
+.summary-section strong {
+  color: #8C867E;
+  width: 80px;
+  display: inline-block;
+}
+
+.summary-services {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.summary-services li {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #A98B62;
+  padding-top: 0.5rem;
+}
+
+.auth-warning {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: rgba(239, 83, 80, 0.1);
+  border: 1px solid rgba(239, 83, 80, 0.2);
+  border-radius: 6px;
+  color: #EF5350;
+  text-align: center;
+}
+
+/* Footer Buttons */
+.wizard-footer {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(169, 139, 98, 0.15);
+  padding-top: 1.5rem;
+}
+
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  background-color: transparent;
+  color: #EDE7DC;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.btn-primary {
+  padding: 0.75rem 2rem;
+  background-color: #A98B62;
+  color: #0B0A09;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #c0a074;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

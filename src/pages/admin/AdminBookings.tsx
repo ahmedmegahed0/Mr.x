@@ -27,9 +27,23 @@ export default function AdminBookings() {
       );
       
       const response = await getBookings(cleanFilters);
-      setBookings(response.items);
-      setTotalCount(response.totalCount);
-      setTotalPages(response.totalPages);
+      const rawResponse = response as any;
+      
+      const extractArray = (obj: any): any[] => {
+        if (!obj) return [];
+        if (Array.isArray(obj)) return obj;
+        if (obj.$values && Array.isArray(obj.$values)) return obj.$values;
+        if (obj.items) return extractArray(obj.items);
+        if (obj.Items) return extractArray(obj.Items);
+        if (obj.data) return extractArray(obj.data);
+        if (obj.Data) return extractArray(obj.Data);
+        return [];
+      };
+      
+      const items = extractArray(rawResponse);
+      setBookings(items);
+      setTotalCount(rawResponse?.totalCount ?? rawResponse?.TotalCount ?? items.length);
+      setTotalPages(rawResponse?.totalPages ?? rawResponse?.TotalPages ?? 1);
     } catch (error) {
       console.error('Failed to fetch bookings:', error);
       setBookings([]);

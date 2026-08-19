@@ -3,19 +3,23 @@
 body, html {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
+  min-height: 100vh;
   background-color: #0B0A09;
   color: #EDE7DC;
   font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+  -webkit-text-size-adjust: 100%;
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }

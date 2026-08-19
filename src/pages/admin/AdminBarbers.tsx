@@ -25,8 +25,14 @@ export default function AdminBarbers() {
     setIsLoading(true);
     setFetchError(null);
     try {
-      const data = await getAdminBarbers();
-      setBarbers(data);
+      const rawData = await getAdminBarbers() as any;
+      const barbersArray = Array.isArray(rawData) ? rawData 
+                         : (rawData?.data && Array.isArray(rawData.data)) ? rawData.data
+                         : (rawData?.$values && Array.isArray(rawData.$values)) ? rawData.$values
+                         : (rawData?.items && Array.isArray(rawData.items)) ? rawData.items
+                         : (rawData?.Items && Array.isArray(rawData.Items)) ? rawData.Items
+                         : [];
+      setBarbers(barbersArray);
     } catch (error) {
       console.error('Failed to fetch barbers:', error);
       setBarbers([]);

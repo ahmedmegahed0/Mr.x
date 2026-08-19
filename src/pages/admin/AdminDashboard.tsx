@@ -31,10 +31,63 @@ export default function AdminDashboard() {
           getTopServices(5).catch(() => [])
         ]);
 
-        if (statsData) setStats(statsData);
-        setMonthlyData(monthlyReportData);
-        setTopBarbers(barbersData);
-        setTopServices(servicesData);
+        const extractArray = (obj: any): any[] => {
+          if (!obj) return [];
+          if (Array.isArray(obj)) return obj;
+          if (obj.$values && Array.isArray(obj.$values)) return obj.$values;
+          if (obj.items) return extractArray(obj.items);
+          if (obj.Items) return extractArray(obj.Items);
+          if (obj.data) return extractArray(obj.data);
+          if (obj.Data) return extractArray(obj.Data);
+          if (obj.result) return extractArray(obj.result);
+          if (obj.Result) return extractArray(obj.Result);
+          return [];
+        };
+
+        const unwrapStats = (obj: any): any => {
+          let target = obj;
+          if (obj?.data && typeof obj.data === 'object') target = obj.data;
+          else if (obj?.Data && typeof obj.Data === 'object') target = obj.Data;
+          else if (obj?.result && typeof obj.result === 'object') target = obj.result;
+          else if (obj?.Result && typeof obj.Result === 'object') target = obj.Result;
+          
+          if (!target) return null;
+
+          return {
+            totalRevenue: target.totalRevenue ?? target.TotalRevenue ?? 0,
+            totalBookings: target.totalBookings ?? target.TotalBookings ?? 0,
+            totalCustomers: target.totalCustomers ?? target.TotalCustomers ?? 0,
+            totalBarbers: target.totalBarbers ?? target.TotalBarbers ?? 0,
+          };
+        };
+
+        if (statsData) setStats(unwrapStats(statsData));
+        
+        const mappedMonthly = extractArray(monthlyReportData).map(d => ({
+          ...d,
+          month: d.month ?? d.Month ?? '',
+          totalRevenue: d.totalRevenue ?? d.TotalRevenue ?? 0,
+          totalBookings: d.totalBookings ?? d.TotalBookings ?? 0
+        }));
+        setMonthlyData(mappedMonthly);
+        
+        const mappedBarbers = extractArray(barbersData).map(b => ({
+          ...b,
+          barberId: b.barberId ?? b.BarberId ?? b.id ?? b.Id,
+          barberName: b.barberName ?? b.BarberName ?? b.fullName ?? b.FullName ?? 'Unknown',
+          bookingCount: b.bookingCount ?? b.BookingCount ?? 0,
+          revenue: b.revenue ?? b.Revenue ?? 0
+        }));
+        setTopBarbers(mappedBarbers);
+        
+        const mappedServices = extractArray(servicesData).map(s => ({
+          ...s,
+          serviceId: s.serviceId ?? s.ServiceId ?? s.id ?? s.Id,
+          serviceName: s.serviceName ?? s.ServiceName ?? s.name ?? s.Name ?? 'Unknown',
+          requestCount: s.requestCount ?? s.RequestCount ?? 0,
+          revenue: s.revenue ?? s.Revenue ?? 0
+        }));
+        setTopServices(mappedServices);
       } catch (error) {
         console.error('Error fetching dashboard data', error);
       } finally {
@@ -46,7 +99,7 @@ export default function AdminDashboard() {
   }, [period]);
 
   const maxRevenue = monthlyData.length 
-    ? Math.max(...monthlyData.map(d => d.totalRevenue)) 
+    ? Math.max(...monthlyData.map(d => d.totalRevenue || 0)) 
     : 1;
 
   return (

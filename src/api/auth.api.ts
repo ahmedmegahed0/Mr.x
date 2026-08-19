@@ -30,12 +30,56 @@ export const sendVerificationCode = async (email: string): Promise<void> => {
 };
 
 /**
+ * Extracts token fields from any common ASP.NET response shape:
+ * - Direct camelCase:  { accessToken, refreshToken, ... }
+ * - Direct PascalCase: { AccessToken, RefreshToken, ... }
+ * - Wrapped in data:   { data: { accessToken | AccessToken, ... } }
+ * - Wrapped in value:  { value: { ... } }
+ * - Wrapped in result: { result: { ... } }
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractTokens(raw: any): TokenResponseDTO {
+  // Try to find the actual token object (handle wrappers)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const candidates: any[] = [
+    raw,
+    raw?.data,
+    raw?.Data,
+    raw?.value,
+    raw?.Value,
+    raw?.result,
+    raw?.Result,
+    raw?.payload,
+    raw?.Payload,
+  ].filter(Boolean);
+
+  for (const obj of candidates) {
+    const accessToken = obj?.accessToken || obj?.AccessToken;
+    const refreshToken = obj?.refreshToken || obj?.RefreshToken;
+    if (accessToken && refreshToken) {
+      return {
+        accessToken,
+        accessTokenExpiresAt:  obj.accessTokenExpiresAt  || obj.AccessTokenExpiresAt  || '',
+        refreshToken,
+        refreshTokenExpiresAt: obj.refreshTokenExpiresAt || obj.RefreshTokenExpiresAt || '',
+        profilePictureUrl:     obj.profilePictureUrl     || obj.ProfilePictureUrl,
+      };
+    }
+  }
+
+  // Nothing matched — log everything for diagnosis
+  console.error('[AUTH] Could not extract tokens from response. Full response:', JSON.stringify(raw));
+  throw new Error('Unrecognized token response structure from server.');
+}
+
+/**
  * Step 2 – Verify OTP → receive tokens
  * POST /api/Auth/verify-code
  */
 export const verifyCode = async (email: string, code: string): Promise<TokenResponseDTO> => {
-  const { data } = await axiosInstance.post<TokenResponseDTO>('/api/Auth/verify-code', { email, code });
-  return data;
+  const { data } = await axiosInstance.post('/api/Auth/verify-code', { email, code });
+  console.log('[AUTH DEBUG] verifyCode raw response:', JSON.stringify(data));
+  return extractTokens(data);
 };
 
 /**
@@ -43,7 +87,7 @@ export const verifyCode = async (email: string, code: string): Promise<TokenResp
  * GET /api/Auth/google-login?returnUrl={encodedCallbackUrl}
  */
 export const getGoogleLoginUrl = (returnUrl: string): string => {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://barbergm.runasp.net';
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://barbermrx.runasp.net';
   return `${baseUrl}/api/Auth/google-login?returnUrl=${encodeURIComponent(returnUrl)}`;
 };
 
@@ -52,8 +96,15 @@ export const getGoogleLoginUrl = (returnUrl: string): string => {
  * POST /api/Auth/refresh-token
  */
 export const refreshToken = async (refreshTokenValue: string): Promise<TokenResponseDTO> => {
-  const { data } = await axiosInstance.post<TokenResponseDTO>('/api/Auth/refresh-token', { refreshToken: refreshTokenValue });
-  return data;
+  const { data } = await axiosInstance.post('/api/Auth/refresh-token', { refreshToken: refreshTokenValue });
+  // Normalize: handle both camelCase and PascalCase from ASP.NET backend
+  return {
+    accessToken:           data.accessToken           || data.AccessToken           || '',
+    accessTokenExpiresAt:  data.accessTokenExpiresAt  || data.AccessTokenExpiresAt  || '',
+    refreshToken:          data.refreshToken          || data.RefreshToken          || '',
+    refreshTokenExpiresAt: data.refreshTokenExpiresAt || data.RefreshTokenExpiresAt || '',
+    profilePictureUrl:     data.profilePictureUrl     || data.ProfilePictureUrl,
+  };
 };
 
 /**

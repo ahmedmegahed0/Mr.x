@@ -57,13 +57,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   /**
    * Called after successful OTP verification or Google OAuth callback.
-   * Persists TokenResponseDTO and checks for pending bookings to redirect.
+   * Decodes the role directly from the JWT (no React state needed) and
+   * navigates straight to the role-specific dashboard — avoids the race
+   * condition where DashboardRouter reads a still-null userRole.
    */
   const handleLoginSuccess = useCallback((tokenData: TokenResponseDTO) => {
     saveTokens(tokenData);
     setTokens(tokenData);
 
-    // Check for pending booking state in sessionStorage
+    console.log('[AUTH DEBUG] handleLoginSuccess called');
+    console.log('[AUTH DEBUG] accessToken exists:', !!tokenData.accessToken);
+    console.log('[AUTH DEBUG] refreshToken exists:', !!tokenData.refreshToken);
+    console.log('[AUTH DEBUG] tokenData keys:', Object.keys(tokenData));
+
+    // ── Decode role synchronously from the JWT payload ──
+    let role: string | null = null;
+    try {
+      const payloadBase64 = tokenData.accessToken.split('.')[1];
+      const decoded = JSON.parse(atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/')));
+      console.log('[AUTH DEBUG] JWT decoded payload:', decoded);
+      role = (
+        decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
+        decoded.role ||
+        null
+      );
+      if (typeof role === 'string') role = role.toLowerCase();
+    } catch (e) {
+      console.log('[AUTH DEBUG] JWT decode error:', e);
+      // malformed JWT — fall through to default
+    }
+
+    console.log('[AUTH DEBUG] decoded role:', role);
+
+    // ── Check for pending booking (customer fast-path) ──
     const pendingBookingRaw = sessionStorage.getItem('pendingBooking');
     if (pendingBookingRaw) {
       try {
@@ -72,13 +98,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           navigate(`/barbers/${pendingBooking.barberId}/book`, { replace: true });
           return;
         }
-      } catch (err) {
-        console.error('Failed to parse pending booking', err);
+      } catch {
+        // ignore parse errors
       }
     }
 
-    // Default redirect
-    navigate('/dashboard', { replace: true });
+    // ── Navigate to the correct dashboard based on role ──
+    if (role === 'admin')  { console.log('[AUTH DEBUG] navigating to /admin');    navigate('/admin',    { replace: true }); return; }
+    if (role === 'barber') { console.log('[AUTH DEBUG] navigating to /barber');   navigate('/barber',   { replace: true }); return; }
+
+    // Default → customer bookings
+    console.log('[AUTH DEBUG] navigating to /bookings (default)');
+    navigate('/bookings', { replace: true });
   }, [navigate]);
 
   /**
@@ -92,7 +123,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const currentTokens = loadTokens();
       if (currentTokens?.refreshToken) {
-        // Best-effort – don't block logout on failure
         await revokeRefresh(currentTokens.refreshToken).catch(() => {});
       }
       await apiLogout().catch(() => {});
@@ -100,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearTokens();
       setTokens(null);
       setIsLoggingOut(false);
-      navigate('/auth', { replace: true });
+      navigate('/login', { replace: true });
     }
   }, [navigate]);
 
@@ -112,7 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const onExpired = () => {
       clearTokens();
       setTokens(null);
-      navigate('/auth', { replace: true });
+      navigate('/login', { replace: true });
     };
 
     window.addEventListener('auth:expired', onExpired);

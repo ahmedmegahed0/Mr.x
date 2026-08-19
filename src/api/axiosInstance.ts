@@ -1,6 +1,28 @@
 import axios, { InternalAxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 import { TokenResponseDTO } from './auth.api';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizeTokens(raw: any): TokenResponseDTO {
+  const candidates = [
+    raw, raw?.data, raw?.Data, raw?.value, raw?.Value,
+    raw?.result, raw?.Result, raw?.payload, raw?.Payload,
+  ].filter(Boolean);
+  for (const obj of candidates) {
+    const accessToken  = obj?.accessToken  || obj?.AccessToken;
+    const refreshToken = obj?.refreshToken || obj?.RefreshToken;
+    if (accessToken && refreshToken) {
+      return {
+        accessToken,
+        accessTokenExpiresAt:  obj.accessTokenExpiresAt  || obj.AccessTokenExpiresAt  || '',
+        refreshToken,
+        refreshTokenExpiresAt: obj.refreshTokenExpiresAt || obj.RefreshTokenExpiresAt || '',
+        profilePictureUrl:     obj.profilePictureUrl     || obj.ProfilePictureUrl,
+      };
+    }
+  }
+  throw new Error('Unrecognized refresh token response: ' + JSON.stringify(raw));
+}
+
 // ─── Token helpers ─────────────────────────────────────────────
 const TOKEN_KEY = 'barber_tokens';
 
@@ -30,7 +52,7 @@ export const clearTokens = (): void => {
 // ─── Axios Instance ─────────────────────────────────────────────
 const axiosInstance = axios.create({
   // Base URL: Process via configured API Base URL environment variable or constant
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://barbergm.runasp.net',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://barbermrx.runasp.net',
   headers: { 'Content-Type': 'application/json' },
   timeout: 15_000,
 });
@@ -92,9 +114,12 @@ axiosInstance.interceptors.response.use(
       }
 
       try {
-        const { data } = await axiosInstance.post<TokenResponseDTO>('/api/Auth/refresh-token', {
+        const { data: rawData } = await axiosInstance.post('/api/Auth/refresh-token', {
           refreshToken: tokens.refreshToken,
         });
+
+        // Normalize PascalCase / camelCase / wrapper patterns
+        const data = normalizeTokens(rawData);
 
         saveTokens(data);
         processPendingRequests(null, data.accessToken);

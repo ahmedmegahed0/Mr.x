@@ -44,11 +44,38 @@ export default function AdminSettings() {
           getShopHours()
         ]);
         
-        setSettings(settingsData);
+        const rawSettings = settingsData as any;
+        setSettings({
+          maximumBookingAdvanceDays: rawSettings.maximumBookingAdvanceDays ?? rawSettings.MaximumBookingAdvanceDays ?? 30,
+          cancellationWindowHours: rawSettings.cancellationWindowHours ?? rawSettings.CancellationWindowHours ?? 24,
+        });
+        
+        const extractArray = (obj: any): any[] => {
+          if (!obj) return [];
+          if (Array.isArray(obj)) return obj;
+          if (obj.$values && Array.isArray(obj.$values)) return obj.$values;
+          if (obj.items) return extractArray(obj.items);
+          if (obj.Items) return extractArray(obj.Items);
+          if (obj.data) return extractArray(obj.data);
+          if (obj.Data) return extractArray(obj.Data);
+          if (obj.result) return extractArray(obj.result);
+          if (obj.Result) return extractArray(obj.Result);
+          return [];
+        };
+        
+        const rawHoursArray = extractArray(hoursData as any);
+        const mappedHours = rawHoursArray.map((h: any) => ({
+          id: h.id ?? h.Id ?? 0,
+          dayOfWeek: h.dayOfWeek ?? h.DayOfWeek,
+          dayName: h.dayName ?? h.DayName ?? DEFAULT_DAYS.find(d => d.dayOfWeek === (h.dayOfWeek ?? h.DayOfWeek))?.dayName,
+          openingTime: h.openingTime ?? h.OpeningTime ?? '09:00',
+          closingTime: h.closingTime ?? h.ClosingTime ?? '21:00',
+          isClosed: h.isClosed ?? h.IsClosed ?? false,
+        }));
         
         // Ensure all 7 days are represented even if API returns partial data
         const completeHours = DEFAULT_DAYS.map(defaultDay => {
-          const existing = hoursData.find(h => h.dayOfWeek === defaultDay.dayOfWeek);
+          const existing = mappedHours.find(h => h.dayOfWeek === defaultDay.dayOfWeek);
           return existing || {
             id: 0,
             dayOfWeek: defaultDay.dayOfWeek,
@@ -62,8 +89,9 @@ export default function AdminSettings() {
         // Sort by dayOfWeek (0-6)
         completeHours.sort((a, b) => a.dayOfWeek - b.dayOfWeek);
         setHours(completeHours);
-      } catch (error) {
-        showToast('Failed to load settings', 'error');
+      } catch (error: any) {
+        console.error('Failed to load settings', error);
+        showToast(error.response?.data?.message || error.message || 'Failed to load settings', 'error');
       } finally {
         setIsLoading(false);
       }

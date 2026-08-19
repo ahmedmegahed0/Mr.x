@@ -94,6 +94,15 @@ export default function AdminLayout() {
             >
               Settings
             </NavLink>
+            <div className="nav-divider" style={{ margin: '1rem 0', borderBottom: '1px solid rgba(169, 139, 98, 0.2)' }}></div>
+            <NavLink 
+              to="/" 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="admin-nav-link public-link"
+              target="_blank"
+            >
+              View Public Site ↗
+            </NavLink>
           </nav>
 
           <button className="admin-logout-btn" onClick={onLogout}>

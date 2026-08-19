@@ -98,90 +98,111 @@ export default function BarberProfile() {
   }
 
   return (
-    <div className="barber-profile-container">
-      <div className="profile-header">
-        <div className="profile-image-wrapper">
-          {barber.profilePictureUrl ? (
-            <img src={barber.profilePictureUrl} alt={barber.fullName} className="profile-image" />
-          ) : (
-            <div className="profile-image-placeholder">
-              {barber.fullName.charAt(0)}
-            </div>
-          )}
-        </div>
-        <div className="profile-info">
-          <h1>{barber.fullName}</h1>
-          <div className="profile-status">
-            <span className={`status-dot ${barber.acceptingBookings ? 'active' : 'inactive'}`}></span>
-            <span className="status-text">
-              {barber.acceptingBookings ? 'Accepting Bookings' : 'Fully Booked'}
-            </span>
-          </div>
-          <p className="profile-duration">Slot Duration: {barber.bookingDurationMinutes} mins</p>
-        </div>
+    <div className="barber-profile-immersive">
+      {/* Immersive Background */}
+      <div className="immersive-bg-container">
+        <img 
+          src="/luxury-barbershop-bg.png" 
+          alt="Atmosphere" 
+          className="immersive-bg-img"
+        />
+        <div className="immersive-gradient-overlay"></div>
       </div>
 
-      <div className="booking-section">
-        <h2>Select an Appointment</h2>
-        <p className="booking-subtitle">Choose a date and time that works for you.</p>
-
-        <div className="date-picker-wrapper">
-          <label htmlFor="date">Date</label>
-          <input 
-            type="date" 
-            id="date"
-            value={selectedDate} 
-            onChange={handleDateChange}
-            min={new Date().toISOString().split('T')[0]} // Cannot pick past dates
-            disabled={!barber.acceptingBookings}
-          />
-        </div>
-
-        <div className="slots-container">
-          {!barber.acceptingBookings ? (
-            <div className="slots-message warning">
-              This barber is currently not accepting new bookings.
-            </div>
-          ) : isLoadingSlots ? (
-            <div className="slots-grid">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="slot-btn skeleton"></div>
-              ))}
-            </div>
-          ) : slotsError ? (
-            <div className="slots-message error">{slotsError}</div>
-          ) : slots.length > 0 ? (
-            <div className="slots-grid">
-              {slots.map((slot, index) => {
-                const isSelected = selectedSlot?.startTime === slot.startTime;
-                return (
-                  <button
-                    key={index}
-                    className={`slot-btn ${isSelected ? 'selected' : ''}`}
-                    onClick={() => setSelectedSlot(slot)}
-                  >
-                    {slot.startTime}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="slots-message">
-              No available slots on this date.
-            </div>
-          )}
-        </div>
-
-        {selectedSlot && barber.acceptingBookings && (
-          <div className="booking-action">
-            <div className="selected-summary">
-              Selected: <strong>{new Date(selectedDate).toLocaleDateString()}</strong> at <strong>{selectedSlot.startTime}</strong>
-            </div>
-            <button className="btn-primary btn-confirm-booking" onClick={handleBookSlot}>
-              Continue to Services
-            </button>
+      <div className="immersive-layout-grid">
+        {/* Left Side: Barber Info */}
+        <div className="immersive-info-side">
+          <div className="barber-portrait-wrapper">
+             {barber.profilePictureUrl ? (
+                <img src={barber.profilePictureUrl} alt={barber.fullName} className="barber-portrait" />
+             ) : (
+                <div className="barber-portrait-placeholder">{barber.fullName.charAt(0)}</div>
+             )}
           </div>
-        )}
+          
+          <span className="immersive-eyebrow">THE CRAFTSMAN</span>
+          <h1 className="immersive-name">{barber.fullName.toUpperCase()}</h1>
+          
+          <div className="immersive-status-block">
+            <div className={`status-indicator ${barber.acceptingBookings ? 'active' : 'inactive'}`}></div>
+            <span className="status-text">
+              {barber.acceptingBookings ? 'Accepting Appointments' : 'Fully Booked'}
+            </span>
+          </div>
+          
+          <p className="immersive-duration">Standard Session: {barber.bookingDurationMinutes} Minutes</p>
+          
+          <div className="immersive-quote">
+            "Precision is not just a skill, it is a lifestyle."
+          </div>
+        </div>
+
+        {/* Right Side: Glass Booking Card */}
+        <div className="immersive-booking-side">
+          <div className="glass-booking-card">
+            <h2 className="glass-title">RESERVE YOUR CHAIR</h2>
+            <p className="glass-subtitle">Select your preferred date and time.</p>
+
+            <div className="glass-date-picker">
+              <input 
+                type="date" 
+                id="date"
+                value={selectedDate} 
+                onChange={handleDateChange}
+                min={new Date().toISOString().split('T')[0]}
+                disabled={!barber.acceptingBookings}
+              />
+            </div>
+
+            <div className="glass-slots-container">
+              {!barber.acceptingBookings ? (
+                <div className="glass-message warning">
+                  Currently unavailable for new bookings.
+                </div>
+              ) : isLoadingSlots ? (
+                <div className="glass-slots-grid">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="glass-slot skeleton"></div>
+                  ))}
+                </div>
+              ) : slotsError ? (
+                <div className="glass-message error">{slotsError}</div>
+              ) : slots.length > 0 ? (
+                <div className="glass-slots-grid">
+                  {slots.map((slot, index) => {
+                    const isSelected = selectedSlot?.startTime === slot.startTime;
+                    return (
+                      <button
+                        key={index}
+                        className={`glass-slot ${isSelected ? 'selected' : ''}`}
+                        onClick={() => setSelectedSlot(slot)}
+                      >
+                        {slot.startTime}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="glass-message">
+                  No slots available on this date.
+                </div>
+              )}
+            </div>
+
+            {selectedSlot && barber.acceptingBookings && (
+              <div className="glass-action-area">
+                <div className="glass-summary">
+                  <span>{new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                  <span className="dot-separator">•</span>
+                  <span className="highlight-time">{selectedSlot.startTime}</span>
+                </div>
+                <button className="btn-glass-confirm" onClick={handleBookSlot}>
+                  CONFIRM &rarr;
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

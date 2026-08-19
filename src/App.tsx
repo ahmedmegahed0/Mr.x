@@ -21,6 +21,15 @@ import BarberDashboard from './pages/barber/BarberDashboard';
 import BarberWorkingHours from './pages/barber/BarberWorkingHours';
 import BarberSettings from './pages/barber/BarberSettings';
 
+// Customer Imports
+import CustomerLayout from './layouts/CustomerLayout';
+import MyBookings from './pages/customer/MyBookings';
+import BookingWizard from './pages/public/BookingWizard';
+
+// Public Imports
+import Home from './pages/public/Home';
+import About from './pages/public/About';
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
@@ -39,50 +48,45 @@ function RoleProtectedRoute({ children, requiredRole }: { children: React.ReactN
   return <>{children}</>;
 }
 
-// A simple placeholder dashboard for authenticated users (Customers/Barbers)
-function DashboardPlaceholder() {
-  const { handleLogout } = useAuth();
-  return (
-    <div style={{ padding: '2rem', textAlign: 'center', color: '#EDE7DC' }}>
-      <h1>Welcome to MR.X</h1>
-      <p>You have successfully logged in.</p>
-      <button 
-        onClick={handleLogout}
-        style={{
-          marginTop: '1rem',
-          padding: '0.75rem 1.5rem',
-          backgroundColor: '#A98B62',
-          border: 'none',
-          color: '#0B0A09',
-          fontWeight: 600,
-          cursor: 'pointer'
-        }}
-      >
-        Sign Out
-      </button>
-    </div>
-  );
+// Redirect based on role instead of placeholder
+function DashboardRouter() {
+  const { userRole } = useAuth();
+  
+  if (userRole?.toLowerCase() === 'admin') return <Navigate to="/admin" replace />;
+  if (userRole?.toLowerCase() === 'barber') return <Navigate to="/barber" replace />;
+  
+  // Default for customer
+  return <Navigate to="/bookings" replace />;
 }
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<AuthPage />} />
+      <Route path="/auth"  element={<AuthPage />} />
       <Route path="/callback" element={<AuthCallbackPage />} />
+      <Route path="/dashboard" element={<DashboardRouter />} />
+
+      {/* Authenticated Customer Routes */}
       <Route 
-        path="/dashboard" 
+        path="/bookings" 
         element={
           <ProtectedRoute>
-            <DashboardPlaceholder />
+            <CustomerLayout />
           </ProtectedRoute>
         } 
-      />
+      >
+        <Route index element={<MyBookings />} />
+        {/* We can add /bookings/:id here if we make a detail view later */}
+      </Route>
       
       {/* Public Routes with Public Layout */}
       <Route element={<PublicLayout />}>
+        <Route index element={<Home />} />
+        <Route path="/about" element={<About />} />
         <Route path="/barbers" element={<BarberDirectory />} />
         <Route path="/barbers/:id" element={<BarberProfile />} />
+        <Route path="/barbers/:id/book" element={<BookingWizard />} />
       </Route>
 
       {/* Admin Routes */}

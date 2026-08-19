@@ -206,12 +206,12 @@ export interface GlobalSettingsDTO {
 }
 
 export const getSettings = async (): Promise<GlobalSettingsDTO> => {
-  const { data } = await axiosInstance.get<GlobalSettingsDTO>('/api/admin/settings');
+  const { data } = await axiosInstance.get<GlobalSettingsDTO>('/api/settings');
   return data;
 };
 
 export const updateSettings = async (payload: GlobalSettingsDTO): Promise<void> => {
-  await axiosInstance.put('/api/admin/settings', payload);
+  await axiosInstance.put('/api/settings', payload);
 };
 
 // ─── Shop Working Hours ─────────────────────────────────────────
@@ -234,12 +234,12 @@ export interface UpdateShopHoursRequest {
 }
 
 export const getShopHours = async (): Promise<ShopWorkingHourDTO[]> => {
-  const { data } = await axiosInstance.get<ShopWorkingHourDTO[]>('/api/admin/shop-hours');
+  const { data } = await axiosInstance.get<ShopWorkingHourDTO[]>('/api/shop-hours');
   return data;
 };
 
 export const updateShopHours = async (payload: UpdateShopHoursRequest): Promise<void> => {
-  await axiosInstance.put('/api/admin/shop-hours', payload);
+  await axiosInstance.put('/api/shop-hours', payload);
 };
 
 // ─── Services Management ─────────────────────────────────────────
@@ -259,20 +259,20 @@ export interface CreateServiceRequest {
 }
 
 export const getAdminServices = async (): Promise<AdminServiceDTO[]> => {
-  const { data } = await axiosInstance.get<AdminServiceDTO[]>('/api/admin/services');
+  const { data } = await axiosInstance.get<AdminServiceDTO[]>('/api/services');
   return data;
 };
 
 export const createAdminService = async (payload: CreateServiceRequest): Promise<AdminServiceDTO> => {
-  const { data } = await axiosInstance.post<AdminServiceDTO>('/api/admin/services', payload);
+  const { data } = await axiosInstance.post<AdminServiceDTO>('/api/services', payload);
   return data;
 };
 
 export const updateAdminService = async (id: number, payload: CreateServiceRequest): Promise<void> => {
-  await axiosInstance.put(`/api/admin/services/${id}`, payload);
+  await axiosInstance.put(`/api/services/${id}`, payload);
 };
 
 export const deleteAdminService = async (id: number): Promise<void> => {
-  await axiosInstance.delete(`/api/admin/services/${id}`);
+  await axiosInstance.delete(`/api/services/${id}`);
 };
 
