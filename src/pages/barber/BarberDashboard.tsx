@@ -10,22 +10,23 @@ export default function BarberDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
-  const fetchTodayBookings = async () => {
+  const fetchBookingsForDate = async (date: Date) => {
     setIsLoading(true);
     setError(null);
     try {
-      const today = new Date().toISOString().split('T')[0];
+      const dateString = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
       const data = await getBarberBookings({
-        fromDate: today,
-        toDate: today,
+        fromDate: dateString,
+        toDate: dateString,
         pageNumber: 1,
         pageSize: 50,
       });
       const sorted = data.items.sort((a, b) => a.startTime.localeCompare(b.startTime));
       setBookings(sorted);
     } catch (err: any) {
-      console.error('Failed to load today bookings', err);
+      console.error('Failed to load bookings', err);
       setError('Server is currently unreachable. Please try again later.');
     } finally {
       setIsLoading(false);
@@ -33,8 +34,24 @@ export default function BarberDashboard() {
   };
 
   useEffect(() => {
-    fetchTodayBookings();
-  }, []);
+    fetchBookingsForDate(currentDate);
+  }, [currentDate]);
+
+  const handlePrevDay = () => {
+    const prev = new Date(currentDate);
+    prev.setDate(prev.getDate() - 1);
+    setCurrentDate(prev);
+  };
+
+  const handleNextDay = () => {
+    const next = new Date(currentDate);
+    next.setDate(next.getDate() + 1);
+    setCurrentDate(next);
+  };
+
+  const handleToday = () => {
+    setCurrentDate(new Date());
+  };
 
   /** Quick-change booking status (Arrived / DidNotArrive) */
   const handleStatusChange = async (bookingId: number, status: BookingStatus) => {
@@ -44,7 +61,7 @@ export default function BarberDashboard() {
       const label = status === BookingStatus.Arrived ? 'Arrived' : 'Did Not Arrive';
       showToast(`Booking #${bookingId} marked as ${label}`, 'success');
       // Refresh the agenda
-      fetchTodayBookings();
+      fetchBookingsForDate(currentDate);
     } catch (err: any) {
       if (err.code === 'ERR_NETWORK') {
         showToast('Service is currently unavailable. Please try again later.', 'error');
@@ -70,12 +87,49 @@ export default function BarberDashboard() {
   const canChangeStatus = (status: string) =>
     !['arrived', 'didnotarrive', 'cancelled'].includes(status?.toLowerCase());
 
+  // Determine header title based on selected date vs today
+  const today = new Date();
+  const isToday = currentDate.getDate() === today.getDate() && 
+                  currentDate.getMonth() === today.getMonth() && 
+                  currentDate.getFullYear() === today.getFullYear();
+                  
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const isTomorrow = currentDate.getDate() === tomorrow.getDate() && 
+                     currentDate.getMonth() === tomorrow.getMonth() && 
+                     currentDate.getFullYear() === tomorrow.getFullYear();
+                     
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const isYesterday = currentDate.getDate() === yesterday.getDate() && 
+                      currentDate.getMonth() === yesterday.getMonth() && 
+                      currentDate.getFullYear() === yesterday.getFullYear();
+
+  let headerTitle = "Agenda";
+  if (isToday) headerTitle = "Today's Agenda";
+  else if (isTomorrow) headerTitle = "Tomorrow's Agenda";
+  else if (isYesterday) headerTitle = "Yesterday's Agenda";
+
   return (
     <div className="barber-dashboard">
-      <header className="page-header">
+      <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1>Today's Agenda</h1>
-          <p className="subtitle">{new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <h1>{headerTitle}</h1>
+          <p className="subtitle">{currentDate.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        </div>
+        
+        <div className="date-navigation" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <button className="btn-secondary" onClick={handlePrevDay} style={{ padding: '0.5rem 1rem' }}>
+            &larr; Prev
+          </button>
+          {!isToday && (
+            <button className="btn-secondary" onClick={handleToday} style={{ padding: '0.5rem 1rem' }}>
+              Today
+            </button>
+          )}
+          <button className="btn-secondary" onClick={handleNextDay} style={{ padding: '0.5rem 1rem' }}>
+            Next &rarr;
+          </button>
         </div>
       </header>
 
@@ -102,8 +156,8 @@ export default function BarberDashboard() {
               return (
                 <div className="timeline-item" key={booking.id}>
                   <div className="time-col">
-                    <span className="time-start">{booking.startTime}</span>
-                    <span className="time-end">{booking.endTime}</span>
+                    <span className="time-start">{booking.startTime.substring(0, 5)}</span>
+                    <span className="time-end">{booking.endTime.substring(0, 5)}</span>
                   </div>
                   <div className="details-col">
                     <div className="customer-info">
@@ -146,8 +200,8 @@ export default function BarberDashboard() {
         ) : (
           <div className="empty-state">
             <div className="icon">🏖️</div>
-            <h3>No appointments today.</h3>
-            <p>Enjoy your free time or check your schedule for tomorrow.</p>
+            <h3>No appointments found.</h3>
+            <p>Enjoy your free time or check your schedule for another day.</p>
           </div>
         )}
       </div>

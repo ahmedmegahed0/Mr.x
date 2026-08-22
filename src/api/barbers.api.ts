@@ -219,39 +219,61 @@ export const getBarberBookings = async (params: {
   pageNumber?: number;
   pageSize?: number;
 }): Promise<PaginatedResult<BarberBookingDTO>> => {
-  const response = await api.get('/api/barbers/me/bookings', { params });
-  const raw = response.data;
+  try {
+    console.log('[getBarberBookings] Request params:', params);
+    const response = await api.get('/api/barbers/me/bookings', { params });
+    const raw = response.data;
+    console.log('[getBarberBookings] Raw response from API:', raw);
 
-  // Try to find the paginated object in common wrapper shapes
-  const candidates = [raw, raw?.data, raw?.Data, raw?.value, raw?.Value, raw?.result, raw?.Result].filter(Boolean);
+    const extractArray = (obj: any): any[] => {
+      if (!obj) return [];
+      if (Array.isArray(obj)) return obj;
+      
+      // Known wrappers
+      if (obj.$values && Array.isArray(obj.$values)) return obj.$values;
+      if (obj.items && Array.isArray(obj.items)) return obj.items;
+      if (obj.Items && Array.isArray(obj.Items)) return obj.Items;
+      
+      // Recursive unwrap
+      if (obj.data) return extractArray(obj.data);
+      if (obj.Data) return extractArray(obj.Data);
+      if (obj.result) return extractArray(obj.result);
+      if (obj.Result) return extractArray(obj.Result);
+      if (obj.value) return extractArray(obj.value);
+      if (obj.Value) return extractArray(obj.Value);
+      
+      // Dynamic fallback: search the object for any array
+      if (typeof obj === 'object') {
+        for (const key in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            if (Array.isArray(obj[key])) {
+              return obj[key];
+            }
+          }
+        }
+      }
+      return [];
+    };
 
-  for (const obj of candidates) {
-    // Direct paginated structure: { items: [...], totalCount, ... }
-    if (obj?.items && Array.isArray(obj.items)) return obj as PaginatedResult<BarberBookingDTO>;
-    
-    // Capitalized properties pagination
-    if (obj?.Items && Array.isArray(obj.Items)) {
-      return {
-        items: obj.Items,
-        totalCount: obj.TotalCount ?? obj.totalCount ?? obj.Items.length,
-        pageNumber: obj.PageNumber ?? obj.pageNumber ?? 1,
-        pageSize: obj.PageSize ?? obj.pageSize ?? obj.Items.length,
-        totalPages: obj.TotalPages ?? obj.totalPages ?? 1,
-      };
-    }
+    const items = extractArray(raw);
+    console.log('[getBarberBookings] Extracted items:', items);
 
-    // Direct array — wrap it
-    if (Array.isArray(obj)) {
-      return { items: obj, totalCount: obj.length, pageNumber: 1, pageSize: obj.length, totalPages: 1 };
-    }
-    
-    // .NET JSON reference preserving array: { $id: '1', $values: [...] }
-    if (obj?.$values && Array.isArray(obj.$values)) {
-      return { items: obj.$values, totalCount: obj.$values.length, pageNumber: 1, pageSize: obj.$values.length, totalPages: 1 };
-    }
+    // Try to find pagination data if it exists in raw or raw.data
+    const root = raw?.data || raw || {};
+    const totalCount = root.totalCount ?? root.TotalCount ?? items.length;
+    const pageNumber = root.pageNumber ?? root.PageNumber ?? params.pageNumber ?? 1;
+    const pageSize = root.pageSize ?? root.PageSize ?? params.pageSize ?? items.length;
+    const totalPages = root.totalPages ?? root.TotalPages ?? 1;
+
+    return {
+      items,
+      totalCount,
+      pageNumber,
+      pageSize,
+      totalPages
+    };
+  } catch (error) {
+    console.error('[getBarberBookings] Error fetching bookings:', error);
+    return { items: [], totalCount: 0, pageNumber: 1, pageSize: 0, totalPages: 0 };
   }
-
-  // Nothing recognized — return empty
-  console.warn('[getBarberBookings] Unrecognized response structure:', raw);
-  return { items: [], totalCount: 0, pageNumber: 1, pageSize: 0, totalPages: 0 };
 };
