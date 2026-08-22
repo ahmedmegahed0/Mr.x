@@ -55,6 +55,17 @@ export default function BarberLayout() {
             <NavLink to="/barber/settings" className={({ isActive }) => (isActive ? 'active' : '')} onClick={closeSidebar}>
               <span className="nav-icon">⚙️</span> Settings
             </NavLink>
+            
+            <div className="nav-divider" style={{ margin: '1rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}></div>
+            <NavLink 
+              to="/" 
+              onClick={closeSidebar}
+              className="public-link"
+              target="_blank"
+              style={{ color: '#d4af37', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '0.75rem 1rem' }}
+            >
+              <span className="nav-icon">🌐</span> View Public Site ↗
+            </NavLink>
           </nav>
 
           <div className="sidebar-footer">

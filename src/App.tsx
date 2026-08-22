@@ -12,6 +12,10 @@ import AdminBarbers from './pages/admin/AdminBarbers';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminServices from './pages/admin/AdminServices';
 
+// Spector Imports
+import SpectorLayout from './layouts/SpectorLayout';
+import SpectorDashboard from './pages/spector/SpectorDashboard';
+
 // Public & Barber Imports
 import PublicLayout from './layouts/PublicLayout';
 import BarberDirectory from './pages/public/BarberDirectory';
@@ -36,12 +40,11 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function RoleProtectedRoute({ children, requiredRole }: { children: React.ReactNode, requiredRole: string }) {
+function RoleProtectedRoute({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) {
   const { isAuthenticated, userRole } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   
-  // If requiredRole is defined but user doesn't have it (case-insensitive check)
-  if (requiredRole && (!userRole || userRole.toLowerCase() !== requiredRole.toLowerCase())) {
+  if (allowedRoles && (!userRole || !allowedRoles.map(r => r.toLowerCase()).includes(userRole.toLowerCase()))) {
     return <Navigate to="/dashboard" replace />;
   }
   
@@ -53,6 +56,7 @@ function DashboardRouter() {
   const { userRole } = useAuth();
   
   if (userRole?.toLowerCase() === 'admin') return <Navigate to="/admin" replace />;
+  if (userRole?.toLowerCase() === 'spector') return <Navigate to="/spector" replace />;
   if (userRole?.toLowerCase() === 'barber') return <Navigate to="/barber" replace />;
   
   // Default for customer
@@ -93,25 +97,37 @@ export default function App() {
       <Route 
         path="/admin" 
         element={
-          <RoleProtectedRoute requiredRole="Admin">
+          <RoleProtectedRoute allowedRoles={['Admin']}>
             <AdminLayout />
           </RoleProtectedRoute>
         }
       >
         <Route index element={<AdminDashboard />} />
-        <Route path="bookings" element={<AdminBookings />} />
-        <Route path="users" element={<AdminUsers />} />
-        <Route path="coupons" element={<AdminCoupons />} />
-        <Route path="barbers" element={<AdminBarbers />} />
-        <Route path="services" element={<AdminServices />} />
-        <Route path="settings" element={<AdminSettings />} />
+        <Route path="bookings" element={<RoleProtectedRoute allowedRoles={['Admin']}><AdminBookings /></RoleProtectedRoute>} />
+        <Route path="users" element={<RoleProtectedRoute allowedRoles={['Admin']}><AdminUsers /></RoleProtectedRoute>} />
+        <Route path="coupons" element={<RoleProtectedRoute allowedRoles={['Admin']}><AdminCoupons /></RoleProtectedRoute>} />
+        <Route path="barbers" element={<RoleProtectedRoute allowedRoles={['Admin']}><AdminBarbers /></RoleProtectedRoute>} />
+        <Route path="services" element={<RoleProtectedRoute allowedRoles={['Admin']}><AdminServices /></RoleProtectedRoute>} />
+        <Route path="settings" element={<RoleProtectedRoute allowedRoles={['Admin']}><AdminSettings /></RoleProtectedRoute>} />
+      </Route>
+
+      {/* Spector Routes */}
+      <Route 
+        path="/spector" 
+        element={
+          <RoleProtectedRoute allowedRoles={['Spector']}>
+            <SpectorLayout />
+          </RoleProtectedRoute>
+        }
+      >
+        <Route index element={<SpectorDashboard />} />
       </Route>
 
       {/* Barber Portal Routes */}
       <Route 
         path="/barber" 
         element={
-          <RoleProtectedRoute requiredRole="Barber">
+          <RoleProtectedRoute allowedRoles={['Barber']}>
             <BarberLayout />
           </RoleProtectedRoute>
         }

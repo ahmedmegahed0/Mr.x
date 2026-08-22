@@ -5,7 +5,7 @@ import './AdminLayout.css';
 import Logo from '../components/Logo';
 
 export default function AdminLayout() {
-  const { handleLogout } = useAuth();
+  const { handleLogout, userRole } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -51,48 +51,54 @@ export default function AdminLayout() {
             >
               Dashboard
             </NavLink>
-            <NavLink 
-              to="/admin/bookings" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
-            >
-              Bookings
-            </NavLink>
-            <NavLink 
-              to="/admin/users" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
-            >
-              Users
-            </NavLink>
-            <NavLink 
-              to="/admin/coupons" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
-            >
-              Coupons
-            </NavLink>
-            <NavLink 
-              to="/admin/barbers" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
-            >
-              Barbers
-            </NavLink>
-            <NavLink 
-              to="/admin/services" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
-            >
-              Services
-            </NavLink>
-            <NavLink 
-              to="/admin/settings" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
-            >
-              Settings
-            </NavLink>
+            
+            {userRole?.toLowerCase() !== 'spector' && (
+              <>
+                <NavLink 
+                  to="/admin/bookings" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
+                >
+                  Bookings
+                </NavLink>
+                <NavLink 
+                  to="/admin/users" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
+                >
+                  Users
+                </NavLink>
+                <NavLink 
+                  to="/admin/coupons" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
+                >
+                  Coupons
+                </NavLink>
+                <NavLink 
+                  to="/admin/barbers" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
+                >
+                  Barbers
+                </NavLink>
+                <NavLink 
+                  to="/admin/services" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
+                >
+                  Services
+                </NavLink>
+                <NavLink 
+                  to="/admin/settings" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
+                >
+                  Settings
+                </NavLink>
+              </>
+            )}
+
             <div className="nav-divider" style={{ margin: '1rem 0', borderBottom: '1px solid rgba(169, 139, 98, 0.2)' }}></div>
             <NavLink 
               to="/" 

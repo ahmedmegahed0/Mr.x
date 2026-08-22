@@ -26,7 +26,17 @@ export default function CustomerLayout() {
                 My Bookings
               </NavLink>
             </li>
-            {/* Can add more links later like Profile */}
+            
+            <div className="nav-divider" style={{ margin: '1rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}></div>
+            <li>
+              <NavLink 
+                to="/" 
+                target="_blank"
+                style={{ color: '#d4af37', textDecoration: 'none', display: 'flex', alignItems: 'center' }}
+              >
+                View Public Site ↗
+              </NavLink>
+            </li>
           </ul>
         </nav>
         

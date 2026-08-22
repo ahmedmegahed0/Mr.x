@@ -105,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // ── Navigate to the correct dashboard based on role ──
     if (role === 'admin')  { console.log('[AUTH DEBUG] navigating to /admin');    navigate('/admin',    { replace: true }); return; }
+    if (role === 'spector') { console.log('[AUTH DEBUG] navigating to /spector'); navigate('/spector', { replace: true }); return; }
     if (role === 'barber') { console.log('[AUTH DEBUG] navigating to /barber');   navigate('/barber',   { replace: true }); return; }
 
     // Default → customer bookings
