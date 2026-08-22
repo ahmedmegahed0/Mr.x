@@ -173,22 +173,14 @@ export const getBarberAvailability = async (id: string, date: string): Promise<A
     };
     
     const arrayData = extractArray(rawData);
-    
-    if (arrayData.length === 0) {
-      throw new Error("Empty availability");
-    }
 
     return arrayData.map((s: any) => ({
       startTime: s.startTime ?? s.StartTime ?? s,
       endTime: s.endTime ?? s.EndTime ?? s
     }));
   } catch (error) {
-    console.warn(`Failed to fetch availability for barber ${id}, using fallback data.`, error);
-    return [
-      { startTime: '09:00:00', endTime: '09:30:00' },
-      { startTime: '10:00:00', endTime: '10:30:00' },
-      { startTime: '14:00:00', endTime: '14:30:00' }
-    ];
+    console.error(`Failed to fetch availability for barber ${id}:`, error);
+    return [];
   }
 };
 
