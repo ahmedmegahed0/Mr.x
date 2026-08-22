@@ -53,20 +53,29 @@ export default function BarberDashboard() {
     setCurrentDate(new Date());
   };
 
-  /** Quick-change booking status (Arrived / DidNotArrive) */
+  /** Quick-change booking status */
   const handleStatusChange = async (bookingId: number, status: BookingStatus) => {
     setUpdatingId(bookingId);
     try {
       await updateBookingStatus(bookingId, status);
-      const label = status === BookingStatus.Arrived ? 'Arrived' : 'Did Not Arrive';
+      
+      let label = '';
+      if (status === BookingStatus.Arrived) label = 'Arrived';
+      else if (status === BookingStatus.DidNotArrive) label = 'Did Not Arrive';
+      else if (status === BookingStatus.Confirmed) label = 'Confirmed (Undo)';
+      
       showToast(`Booking #${bookingId} marked as ${label}`, 'success');
       // Refresh the agenda
       fetchBookingsForDate(currentDate);
     } catch (err: any) {
+      console.error('Update status failed:', err.response?.data || err);
+      
+      const errorMessage = err.response?.data?.message || err.response?.data || '';
+      
       if (err.code === 'ERR_NETWORK') {
         showToast('Service is currently unavailable. Please try again later.', 'error');
       } else {
-        showToast(`Failed to update booking #${bookingId} status.`, 'error');
+        showToast(`Failed to update booking #${bookingId}. ${errorMessage}`, 'error');
       }
     } finally {
       setUpdatingId(null);
@@ -89,6 +98,10 @@ export default function BarberDashboard() {
 
   // Determine header title based on selected date vs today
   const today = new Date();
+  const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const currentViewDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+  
+  const isPastDay = currentViewDateOnly < todayDateOnly;
   const isToday = currentDate.getDate() === today.getDate() && 
                   currentDate.getMonth() === today.getMonth() && 
                   currentDate.getFullYear() === today.getFullYear();
@@ -152,7 +165,9 @@ export default function BarberDashboard() {
           <div className="agenda-timeline">
             {bookings.map((booking) => {
               const isUpdating = updatingId === booking.id;
-              const actionable = canChangeStatus(booking.status);
+              const statusLower = booking.status?.toLowerCase();
+              const canMarkArrived = !isPastDay && !['arrived', 'didnotarrive', 'cancelled'].includes(statusLower);
+
               return (
                 <div className="timeline-item" key={booking.id}>
                   <div className="time-col">
@@ -171,7 +186,7 @@ export default function BarberDashboard() {
                       <span className="price">EGP {booking.totalPrice.toFixed(2)}</span>
 
                       {/* ── Quick Status Actions ── */}
-                      {actionable && (
+                      {canMarkArrived && (
                         <div className="barber-status-actions">
                           <button
                             className="btn-status arrived"

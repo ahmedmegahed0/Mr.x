@@ -255,7 +255,23 @@ export const getBarberBookings = async (params: {
       return [];
     };
 
-    const items = extractArray(raw);
+    const extractedItems = extractArray(raw);
+    const items = extractedItems.map((b: any) => ({
+      id: b.id ?? b.Id,
+      customerId: b.customerId ?? b.CustomerId,
+      customerName: b.customerName ?? b.CustomerName ?? 'Unknown Customer',
+      customerPhone: b.customerPhone ?? b.CustomerPhone ?? b.phoneNumber ?? b.PhoneNumber ?? '',
+      barberId: b.barberId ?? b.BarberId,
+      barberName: b.barberName ?? b.BarberName,
+      bookingDate: b.bookingDate ?? b.BookingDate,
+      startTime: b.startTime ?? b.StartTime,
+      endTime: b.endTime ?? b.EndTime,
+      subTotal: b.subTotal ?? b.SubTotal ?? 0,
+      discount: b.discount ?? b.Discount ?? 0,
+      totalPrice: b.totalPrice ?? b.TotalPrice ?? 0,
+      status: b.status ?? b.Status,
+      createdAt: b.createdAt ?? b.CreatedAt,
+    }));
     console.log('[getBarberBookings] Extracted items:', items);
 
     // Try to find pagination data if it exists in raw or raw.data
