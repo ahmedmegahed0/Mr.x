@@ -1,5 +1,18 @@
 import api from './axiosInstance';
 
+// ─── Booking Status Enum ────────────────────────────────────────
+// 1: Confirmed | 2: Cancelled | 3: Arrived | 4: DidNotArrive
+export enum BookingStatus {
+  Confirmed   = 1,
+  Cancelled   = 2,
+  Arrived     = 3,
+  DidNotArrive = 4,
+}
+
+export interface UpdateBookingStatusRequest {
+  status: BookingStatus;
+}
+
 export interface CreateBookingRequest {
   barberId: string;
   bookingDate: string; // YYYY-MM-DD
@@ -121,4 +134,16 @@ export const getBookingById = async (id: number): Promise<BookingDTO> => {
 
 export const cancelBooking = async (id: number): Promise<void> => {
   await api.post(`/api/bookings/${id}/cancel`);
+};
+
+/**
+ * PATCH /api/Bookings/{id}/status
+ * Roles: Admin, Barber
+ * Updates the booking status to one of: Confirmed (1), Cancelled (2), Arrived (3), DidNotArrive (4).
+ */
+export const updateBookingStatus = async (
+  id: number,
+  status: BookingStatus
+): Promise<void> => {
+  await api.patch(`/api/Bookings/${id}/status`, { status });
 };

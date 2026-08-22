@@ -73,9 +73,9 @@ export default function BarberProfile() {
     sessionStorage.setItem('pendingBooking', JSON.stringify(pendingBooking));
     
     if (isAuthenticated) {
-      navigate(`/book/services`);
+      navigate(`/barbers/${barber.id}/book`);
     } else {
-      navigate('/login');
+      navigate('/login', { state: { returnTo: `/barbers/${barber.id}/book` } });
     }
   };
 

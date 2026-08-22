@@ -1,5 +1,6 @@
 import axiosInstance from './axiosInstance';
 
+
 // ─── Shared Types ───────────────────────────────────────────────
 export interface PaginatedResult<T> {
   items: T[];
@@ -20,8 +21,10 @@ export interface DashboardStatsDTO {
 }
 
 export const getDashboardStats = async (): Promise<DashboardStatsDTO> => {
-  const { data } = await axiosInstance.get<DashboardStatsDTO>('/api/admin/dashboard');
-  return data;
+  // Returns { success, data: { totalConfirmedRevenue, totalConfirmedBookings, totalUsers, ... } }
+  const { data: raw } = await axiosInstance.get<any>('/api/admin/dashboard');
+  // Return raw so AdminDashboard.unwrapStats can read the real field names
+  return raw as DashboardStatsDTO;
 };
 
 // ─── Monthly Report ─────────────────────────────────────────────
@@ -41,8 +44,12 @@ export interface MonthlyReportParams {
 }
 
 export const getMonthlyReport = async (params: MonthlyReportParams = {}): Promise<MonthlyReportDTO[]> => {
-  const { data } = await axiosInstance.get<MonthlyReportDTO[]>('/api/admin/dashboard/monthly', { params });
-  return data;
+  const { data: raw } = await axiosInstance.get<any>('/api/admin/dashboard/monthly', { params });
+  // Unwrap { success, data: [...] } envelope
+  const arr = raw?.data ?? raw?.Data ?? raw;
+  if (Array.isArray(arr)) return arr;
+  if (arr?.$values && Array.isArray(arr.$values)) return arr.$values;
+  return [];
 };
 
 // ─── Top Barbers ────────────────────────────────────────────────
@@ -54,10 +61,11 @@ export interface TopBarberDTO {
 }
 
 export const getTopBarbers = async (count: number = 10): Promise<TopBarberDTO[]> => {
-  const { data } = await axiosInstance.get<TopBarberDTO[]>('/api/admin/dashboard/top-barbers', {
-    params: { count }
-  });
-  return data;
+  const { data: raw } = await axiosInstance.get<any>('/api/admin/dashboard/top-barbers', { params: { count } });
+  const arr = raw?.data ?? raw?.Data ?? raw;
+  if (Array.isArray(arr)) return arr;
+  if (arr?.$values && Array.isArray(arr.$values)) return arr.$values;
+  return [];
 };
 
 // ─── Top Services ───────────────────────────────────────────────
@@ -69,10 +77,11 @@ export interface TopServiceDTO {
 }
 
 export const getTopServices = async (count: number = 10): Promise<TopServiceDTO[]> => {
-  const { data } = await axiosInstance.get<TopServiceDTO[]>('/api/admin/dashboard/top-services', {
-    params: { count }
-  });
-  return data;
+  const { data: raw } = await axiosInstance.get<any>('/api/admin/dashboard/top-services', { params: { count } });
+  const arr = raw?.data ?? raw?.Data ?? raw;
+  if (Array.isArray(arr)) return arr;
+  if (arr?.$values && Array.isArray(arr.$values)) return arr.$values;
+  return [];
 };
 
 // ─── Bookings Management ────────────────────────────────────────
@@ -97,9 +106,32 @@ export interface BookingsFilterParams {
 }
 
 export const getBookings = async (params: BookingsFilterParams): Promise<PaginatedResult<BookingDTO>> => {
-  const { data } = await axiosInstance.get<PaginatedResult<BookingDTO>>('/api/admin/bookings', { params });
-  return data;
+  const { data: raw } = await axiosInstance.get<any>('/api/admin/bookings', { params });
+
+  // Backend returns: { success, data: { pageSize, pageIndex, count, data: [...] } }
+  const envelope = raw?.data ?? raw?.Data ?? raw;
+
+  // Inner array lives in envelope.data (nested) or envelope.items
+  const extractItems = (obj: any): any[] => {
+    if (!obj) return [];
+    if (Array.isArray(obj)) return obj;
+    if (obj.$values && Array.isArray(obj.$values)) return obj.$values;
+    // The real backend puts items in envelope.data when envelope itself is the paged object
+    if (obj.data && Array.isArray(obj.data)) return obj.data;
+    if (obj.items && Array.isArray(obj.items)) return obj.items;
+    if (obj.Items && Array.isArray(obj.Items)) return obj.Items;
+    return [];
+  };
+
+  const items = extractItems(envelope);
+  const totalCount = envelope?.count ?? envelope?.totalCount ?? envelope?.TotalCount ?? items.length;
+  const pageNumber  = envelope?.pageIndex ?? envelope?.pageNumber ?? envelope?.PageNumber ?? 1;
+  const pageSize    = envelope?.pageSize  ?? envelope?.PageSize   ?? items.length;
+  const totalPages  = pageSize > 0 ? Math.ceil(totalCount / pageSize) : 1;
+
+  return { items, totalCount, pageNumber, pageSize, totalPages };
 };
+
 
 // ─── Users Management ───────────────────────────────────────────
 export interface UserDTO {
@@ -180,7 +212,7 @@ export interface AdminBarberDTO {
 export interface CreateBarberRequest {
   fullName: string;
   email: string;
-  phoneNumber?: string;
+  phoneNumber: string;   // Required per API spec v2.4.0
   bookingDurationMinutes: number;
   acceptingBookings: boolean;
 }
@@ -206,12 +238,12 @@ export interface GlobalSettingsDTO {
 }
 
 export const getSettings = async (): Promise<GlobalSettingsDTO> => {
-  const { data } = await axiosInstance.get<GlobalSettingsDTO>('/api/settings');
+  const { data } = await axiosInstance.get<GlobalSettingsDTO>('/api/admin/settings');
   return data;
 };
 
 export const updateSettings = async (payload: GlobalSettingsDTO): Promise<void> => {
-  await axiosInstance.put('/api/settings', payload);
+  await axiosInstance.put('/api/admin/settings', payload);
 };
 
 // ─── Shop Working Hours ─────────────────────────────────────────
@@ -234,12 +266,12 @@ export interface UpdateShopHoursRequest {
 }
 
 export const getShopHours = async (): Promise<ShopWorkingHourDTO[]> => {
-  const { data } = await axiosInstance.get<ShopWorkingHourDTO[]>('/api/shop-hours');
+  const { data } = await axiosInstance.get<ShopWorkingHourDTO[]>('/api/admin/shop-hours');
   return data;
 };
 
 export const updateShopHours = async (payload: UpdateShopHoursRequest): Promise<void> => {
-  await axiosInstance.put('/api/shop-hours', payload);
+  await axiosInstance.put('/api/admin/shop-hours', payload);
 };
 
 // ─── Services Management ─────────────────────────────────────────

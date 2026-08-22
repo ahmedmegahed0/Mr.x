@@ -1,34 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { getBookings, BookingDTO, BookingsFilterParams } from '../../api/admin.api';
+import { updateBookingStatus, BookingStatus } from '../../api/bookings.api';
+import { useToast } from '../../context/ToastContext';
 import './AdminBookings.css';
 
 export default function AdminBookings() {
+  const { showToast } = useToast();
   const [bookings, setBookings] = useState<BookingDTO[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  // Tracks which booking ID is currently being status-updated
+  const [updatingId, setUpdatingId] = useState<string | number | null>(null);
 
   const [filters, setFilters] = useState<BookingsFilterParams>({
     pageNumber: 1,
     pageSize: 10,
     date: '',
     status: '',
-    // Optional: barberId or customerId could be added here
   });
 
   const fetchBookings = async (currentFilters: BookingsFilterParams) => {
     setIsLoading(true);
     setFetchError(null);
     try {
-      // Remove empty strings to not send them as query params
       const cleanFilters = Object.fromEntries(
         Object.entries(currentFilters).filter(([_, v]) => v !== '')
       );
-      
+
       const response = await getBookings(cleanFilters);
       const rawResponse = response as any;
-      
+
       const extractArray = (obj: any): any[] => {
         if (!obj) return [];
         if (Array.isArray(obj)) return obj;
@@ -39,7 +42,7 @@ export default function AdminBookings() {
         if (obj.Data) return extractArray(obj.Data);
         return [];
       };
-      
+
       const items = extractArray(rawResponse);
       setBookings(items);
       setTotalCount(rawResponse?.totalCount ?? rawResponse?.TotalCount ?? items.length);
@@ -63,7 +66,6 @@ export default function AdminBookings() {
   };
 
   const handleApplyFilters = () => {
-    // Reset to page 1 when applying filters
     setFilters(prev => ({ ...prev, pageNumber: 1 }));
     fetchBookings({ ...filters, pageNumber: 1 });
   };
@@ -86,14 +88,40 @@ export default function AdminBookings() {
     }
   };
 
-  const getStatusClass = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'confirmed': return 'confirmed';
-      case 'completed': return 'completed';
-      case 'cancelled': return 'cancelled';
-      default: return '';
+  /** Quick-change booking status (Arrived / DidNotArrive) */
+  const handleStatusChange = async (bookingId: string | number, status: BookingStatus) => {
+    setUpdatingId(bookingId);
+    try {
+      await updateBookingStatus(Number(bookingId), status);
+      const label = status === BookingStatus.Arrived ? 'Arrived' : 'Did Not Arrive';
+      showToast(`Booking #${bookingId} marked as ${label}`, 'success');
+      // Refresh current page to reflect updated status
+      fetchBookings(filters);
+    } catch (err: any) {
+      if (err.code === 'ERR_NETWORK') {
+        showToast('Service is currently unavailable. Please try again later.', 'error');
+      } else {
+        showToast(`Failed to update booking #${bookingId} status.`, 'error');
+      }
+    } finally {
+      setUpdatingId(null);
     }
   };
+
+  const getStatusClass = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'confirmed':    return 'confirmed';
+      case 'completed':    return 'completed';
+      case 'cancelled':    return 'cancelled';
+      case 'arrived':      return 'arrived';
+      case 'didnotarrive': return 'didnotarrive';
+      default:             return '';
+    }
+  };
+
+  /** Determines which status actions are available for a given booking */
+  const canMarkArrived     = (status: string) => !['arrived', 'didnotarrive', 'cancelled'].includes(status?.toLowerCase());
+  const canMarkDidNotArrive = (status: string) => !['arrived', 'didnotarrive', 'cancelled'].includes(status?.toLowerCase());
 
   return (
     <div className="admin-bookings">
@@ -104,22 +132,31 @@ export default function AdminBookings() {
       <div className="filters-bar">
         <div className="filter-group">
           <label>Date</label>
-          <input 
-            type="date" 
-            name="date" 
-            value={filters.date || ''} 
-            onChange={handleFilterChange} 
+          <input
+            type="date"
+            name="date"
+            value={filters.date || ''}
+            onChange={handleFilterChange}
             onBlur={handleApplyFilters}
           />
         </div>
-        
+
         <div className="filter-group">
           <label>Status</label>
-          <select name="status" value={filters.status || ''} onChange={(e) => { handleFilterChange(e); setTimeout(() => fetchBookings({ ...filters, status: e.target.value, pageNumber: 1 }), 0); }}>
+          <select
+            name="status"
+            value={filters.status || ''}
+            onChange={(e) => {
+              handleFilterChange(e);
+              setTimeout(() => fetchBookings({ ...filters, status: e.target.value, pageNumber: 1 }), 0);
+            }}
+          >
             <option value="">All Statuses</option>
             <option value="Confirmed">Confirmed</option>
             <option value="Completed">Completed</option>
             <option value="Cancelled">Cancelled</option>
+            <option value="Arrived">Arrived</option>
+            <option value="DidNotArrive">Did Not Arrive</option>
           </select>
         </div>
 
@@ -133,16 +170,16 @@ export default function AdminBookings() {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Date & Time</th>
+              <th>Date &amp; Time</th>
               <th>Customer</th>
               <th>Barber</th>
               <th>Total Price</th>
               <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
-              // Skeletons
               Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i} className="skeleton-row">
                   <td><div className="skeleton-cell" style={{ width: '40px' }}></div></td>
@@ -151,11 +188,12 @@ export default function AdminBookings() {
                   <td><div className="skeleton-cell" style={{ width: '100px' }}></div></td>
                   <td><div className="skeleton-cell" style={{ width: '60px' }}></div></td>
                   <td><div className="skeleton-cell" style={{ width: '80px' }}></div></td>
+                  <td><div className="skeleton-cell" style={{ width: '140px' }}></div></td>
                 </tr>
               ))
             ) : fetchError ? (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: '#EF5350', background: 'rgba(239, 83, 80, 0.05)' }}>
+                <td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: '#EF5350', background: 'rgba(239, 83, 80, 0.05)' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '1.5rem' }}>⚠️</span>
                     <span style={{ fontWeight: '500' }}>{fetchError}</span>
@@ -163,23 +201,53 @@ export default function AdminBookings() {
                 </td>
               </tr>
             ) : bookings.length > 0 ? (
-              bookings.map((booking) => (
-                <tr key={booking.id}>
-                  <td>#{booking.id}</td>
-                  <td>{new Date(booking.bookingDate).toLocaleString()}</td>
-                  <td>{booking.customerName}</td>
-                  <td>{booking.barberName}</td>
-                  <td>${booking.totalPrice.toLocaleString()}</td>
-                  <td>
-                    <span className={`status-badge ${getStatusClass(booking.status)}`}>
-                      {booking.status}
-                    </span>
-                  </td>
-                </tr>
-              ))
+              bookings.map((booking) => {
+                const isUpdating = updatingId === booking.id;
+                return (
+                  <tr key={booking.id}>
+                    <td>#{booking.id}</td>
+                    <td>{new Date(booking.bookingDate).toLocaleString()}</td>
+                    <td>{booking.customerName}</td>
+                    <td>{booking.barberName}</td>
+                    <td>${booking.totalPrice.toLocaleString()}</td>
+                    <td>
+                      <span className={`status-badge ${getStatusClass(booking.status)}`}>
+                        {booking.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="booking-actions">
+                        {canMarkArrived(booking.status) && (
+                          <button
+                            className="btn-status arrived"
+                            disabled={isUpdating}
+                            onClick={() => handleStatusChange(booking.id, BookingStatus.Arrived)}
+                            title="Mark as Arrived"
+                          >
+                            {isUpdating ? '…' : '✔ Arrived'}
+                          </button>
+                        )}
+                        {canMarkDidNotArrive(booking.status) && (
+                          <button
+                            className="btn-status didnotarrive"
+                            disabled={isUpdating}
+                            onClick={() => handleStatusChange(booking.id, BookingStatus.DidNotArrive)}
+                            title="Mark as Did Not Arrive"
+                          >
+                            {isUpdating ? '…' : '✖ No-Show'}
+                          </button>
+                        )}
+                        {!canMarkArrived(booking.status) && !canMarkDidNotArrive(booking.status) && (
+                          <span className="no-actions">—</span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: '#8C867E' }}>
+                <td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: '#8C867E' }}>
                   No bookings found.
                 </td>
               </tr>
@@ -193,16 +261,16 @@ export default function AdminBookings() {
               Showing {(filters.pageNumber! - 1) * filters.pageSize! + 1} - {Math.min(filters.pageNumber! * filters.pageSize!, totalCount)} of {totalCount}
             </div>
             <div className="pagination-controls">
-              <button 
-                className="btn-page" 
-                onClick={handlePrevPage} 
+              <button
+                className="btn-page"
+                onClick={handlePrevPage}
                 disabled={filters.pageNumber! <= 1}
               >
                 Prev
               </button>
-              <button 
-                className="btn-page" 
-                onClick={handleNextPage} 
+              <button
+                className="btn-page"
+                onClick={handleNextPage}
                 disabled={filters.pageNumber! >= totalPages}
               >
                 Next

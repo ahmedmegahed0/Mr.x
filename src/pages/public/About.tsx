@@ -1,4 +1,5 @@
 import './About.css';
+import Logo from '../../components/Logo';
 
 export default function About() {
   return (
@@ -17,7 +18,9 @@ export default function About() {
         
         {/* Minimal Header */}
         <div className="about-header">
-          <h1 className="about-title">MR.X BARBERSHOP</h1>
+          <h1 className="about-title" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Logo />
+          </h1>
           <p className="about-subtitle">Premium Grooming &bull; Est. 2026</p>
         </div>
 

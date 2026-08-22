@@ -23,3 +23,13 @@ body, html {
   flex-direction: column;
   overflow-x: hidden;
 }
+
+.mrx-logo-img {
+  height: 60px; /* Increased size */
+  width: auto;
+  object-fit: contain;
+  display: block;
+  mix-blend-mode: screen; /* Removes the black background */
+  filter: contrast(1.8) brightness(1.2); /* Forces dark gray background to pure black so it disappears completely */
+  transform: scale(1.4); /* Scales up the inner logo text */
+}

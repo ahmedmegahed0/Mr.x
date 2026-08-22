@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ToastProvider } from '../context/ToastContext';
 import './AdminLayout.css';
+import Logo from '../components/Logo';
 
 export default function AdminLayout() {
   const { handleLogout } = useAuth();
@@ -19,12 +19,11 @@ export default function AdminLayout() {
   };
 
   return (
-    <ToastProvider>
-      <div className="admin-layout">
+    <div className="admin-layout">
         {/* Mobile Header for Hamburger */}
         <div className="mobile-header">
           <div className="mobile-logo">
-            <h2>MR.X</h2>
+            <Logo className="small" onClick={() => navigate('/admin')} />
             <span>Admin</span>
           </div>
           <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
@@ -39,7 +38,7 @@ export default function AdminLayout() {
 
         <aside className={`admin-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="admin-sidebar-header">
-            <h2>MR.X</h2>
+            <Logo onClick={() => navigate('/admin')} />
             <span>Admin Portal</span>
           </div>
           
@@ -116,7 +115,6 @@ export default function AdminLayout() {
           </div>
         </main>
       </div>
-    </ToastProvider>
   );
 }
 

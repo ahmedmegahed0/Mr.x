@@ -153,3 +153,93 @@
   padding: 1rem 2rem;
   border-radius: 8px;
 }
+
+/* ── Status Badges ───────────────────────────────────────── */
+.status-badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: inline-block;
+}
+
+.status-badge.confirmed {
+  background: rgba(212, 175, 55, 0.15);
+  color: #ffdf73;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.status-badge.completed {
+  background: rgba(46, 125, 50, 0.15);
+  color: #4CAF50;
+  border: 1px solid rgba(46, 125, 50, 0.3);
+}
+
+.status-badge.cancelled {
+  background: rgba(198, 40, 40, 0.15);
+  color: #EF5350;
+  border: 1px solid rgba(198, 40, 40, 0.3);
+}
+
+.status-badge.arrived {
+  background: rgba(30, 120, 90, 0.18);
+  color: #4ECDA4;
+  border: 1px solid rgba(78, 205, 164, 0.3);
+}
+
+.status-badge.didnotarrive {
+  background: rgba(120, 60, 20, 0.18);
+  color: #E8975F;
+  border: 1px solid rgba(232, 151, 95, 0.3);
+}
+
+/* ── Barber Quick-Status Action Buttons ───────────────────── */
+.barber-status-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.btn-status {
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-status:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-status.arrived {
+  background: rgba(30, 120, 90, 0.15);
+  color: #4ECDA4;
+  border-color: rgba(78, 205, 164, 0.3);
+}
+
+.btn-status.arrived:hover:not(:disabled) {
+  background: rgba(78, 205, 164, 0.22);
+  border-color: #4ECDA4;
+  box-shadow: 0 0 8px rgba(78, 205, 164, 0.2);
+}
+
+.btn-status.didnotarrive {
+  background: rgba(120, 60, 20, 0.15);
+  color: #E8975F;
+  border-color: rgba(232, 151, 95, 0.3);
+}
+
+.btn-status.didnotarrive:hover:not(:disabled) {
+  background: rgba(232, 151, 95, 0.22);
+  border-color: #E8975F;
+  box-shadow: 0 0 8px rgba(232, 151, 95, 0.2);
+}

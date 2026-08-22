@@ -57,7 +57,12 @@ export default function BookingWizard() {
             setCouponCode(pendingBooking.couponCode || '');
             setFullName(pendingBooking.fullName || '');
             setPhoneNumber(pendingBooking.phoneNumber || '');
-            setStep(4); // Skip to confirmation
+            
+            if (pendingBooking.serviceIds && pendingBooking.serviceIds.length > 0 && pendingBooking.fullName) {
+              setStep(4); // Skip to confirmation if they were redirected from step 4
+            } else {
+              setStep(1); // Start at services if they came from BarberProfile
+            }
           }
           sessionStorage.removeItem('pendingBooking');
         }
@@ -130,11 +135,11 @@ export default function BookingWizard() {
       bookingDate: selectedDate,
       startTime: selectedSlot.length === 5 ? `${selectedSlot}:00` : selectedSlot,
       serviceIds: selectedServiceIds,
-      couponCode: couponCode || null,
+      couponCode: couponCode || undefined,
       fullName,
-      phoneNumber,
+      phoneNumber: phoneNumber.replace(/^\+20|\s/g, ''),
       customerName: fullName,
-      customerPhone: phoneNumber
+      customerPhone: phoneNumber.replace(/^\+20|\s/g, '')
     };
 
     if (!isAuthenticated) {

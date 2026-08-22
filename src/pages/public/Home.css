@@ -614,6 +614,139 @@
 }
 
 /* ==========================================================================
+   SERVICES CARD GRID (mobile-first upgrade)
+   ========================================================================== */
+/* hidden on desktop — marquee only on mobile */
+.menu-cards-grid  { display: none; }
+
+/* ── Infinite Marquee ── */
+.menu-cards-marquee {
+  display: none;         /* shown only on mobile via media query */
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  /* fade edges */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.menu-cards-track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  animation: marquee-scroll 18s linear infinite;
+}
+
+@media (hover: hover) {
+  .menu-cards-track:hover {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+
+.menu-card {
+  background: var(--mrx-light-surface);
+  border: 1px solid var(--mrx-light-border);
+  border-radius: 16px;
+  padding: 1.4rem 1.2rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease;
+  cursor: default;
+}
+
+.menu-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(201, 169, 110, 0.06) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.menu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+  border-color: rgba(166, 124, 69, 0.3);
+}
+
+.menu-card:hover::before { opacity: 1; }
+
+.menu-card-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.menu-card-name {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--mrx-light-text);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.menu-card-desc {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--mrx-light-muted);
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.menu-card-price {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(166, 124, 69, 0.12);
+  color: var(--mrx-gold-dark);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  border-radius: 50px;
+  border: 1px solid rgba(166, 124, 69, 0.2);
+  align-self: flex-start;
+  margin-top: auto;
+  letter-spacing: 0.02em;
+}
+
+/* Mobile scroll indicator dots */
+.hero-scroll-indicator {
+  display: none;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 4px 0;
+}
+
+.hero-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: all 0.3s ease;
+}
+
+.hero-dot.active {
+  background: var(--mrx-gold);
+  width: 18px;
+  border-radius: 3px;
+}
+
+/* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 
@@ -659,100 +792,168 @@
 
 /* ── LARGE MOBILE / SMALL TABLET (768px and below) ── */
 @media (max-width: 768px) {
+
+  /* ─── HERO: Full-width swipeable cards ─── */
   .mrx-hero-fullscreen {
-    padding: 80px 16px 20px;
+    padding: 72px 0 16px;
     height: 100svh;
+    justify-content: flex-start;
+    gap: 0;
   }
 
-  .hero-top    { gap: 6px; }
-  .hero-eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; }
-  .hero-headline { font-size: clamp(1.9rem, 6vw, 2.6rem); }
+  .hero-top {
+    padding: 0 20px;
+    margin-bottom: 12px;
+    gap: 4px;
+  }
 
+  .hero-eyebrow { font-size: 0.62rem; letter-spacing: 0.22em; }
+  .hero-headline { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+
+  /* Stage: centered snap carousel */
+  .hero-cards-stage {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: calc(50% - (42.5vw - 7px)); /* center each card */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin: 0;
+    width: 100%;
+    padding: 0;              /* no side padding — row handles centering offset */
+    box-sizing: border-box;
+  }
+  .hero-cards-stage::-webkit-scrollbar { display: none; }
+
+  .hero-cards-row {
+    width: max-content;
+    flex-wrap: nowrap;
+    gap: 16px;
+    align-items: stretch;
+    height: 100%;
+    /* side padding = (100vw - card_width) / 2 so first & last card center */
+    padding: 0 calc(7.5vw + 4px);
+  }
+
+  /* Cards: tall portrait, nearly full screen width */
   .barber-card-seat {
-    min-width: 200px;
-    max-width: 200px;
+    min-width: calc(85vw - 24px);
+    max-width: calc(85vw - 24px);
+    height: 100%;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    /* hide chair on mobile — save vertical space */
   }
 
-  .barber-chair-svg {
-    width: 85%;
-    max-width: 185px;
+  .barber-card {
+    aspect-ratio: unset;
+    height: calc(100% - 0px);
+    border-radius: 22px;
   }
 
-  .hero-cards-row { gap: 16px; }
-  .hero-cards-stage { margin: 14px 0 10px; }
+  /* Hide the barber chair SVG on mobile */
+  .barber-chair-wrap { display: none; }
 
+  /* Book btn always visible */
+  .btn-book-card {
+    opacity: 1;
+    transform: translateY(0);
+    font-size: 0.72rem;
+    padding: 0.7rem 1.4rem;
+  }
+
+  .barber-card-content { padding: 1.2rem 1.4rem 1.8rem; }
+  .barber-name { font-size: 1.3rem; }
+  .barber-role { font-size: 0.62rem; }
+
+  /* Scroll indicator dots */
+  .hero-scroll-indicator {
+    display: flex;
+    margin-top: 10px;
+    flex-shrink: 0;
+    padding-bottom: 4px;
+  }
+
+  .hero-bottom {
+    padding-bottom: 0;
+    margin-top: 6px;
+  }
   .btn-browse-all {
-    padding: 0.65rem 1.8rem;
-    font-size: 0.74rem;
+    padding: 0.6rem 1.6rem;
+    font-size: 0.72rem;
   }
 
-  .mrx-rituals  { padding: 80px 1.4rem; }
-  .mrx-cta      { padding: 80px 1.4rem; }
+  /* ─── SERVICES: Infinite marquee ─── */
+  .mrx-rituals         { padding: 72px 0 80px; }
+  .rituals-content     { padding: 0 1.2rem; }   /* keep title indented */
+  .menu-cards-marquee  { margin: 0 -1.2rem; }   /* but marquee goes full-bleed */
 
-  .title-highlight { font-size: clamp(1.8rem, 5vw, 2.4rem); }
+  /* Hide desktop list, show marquee */
+  .menu-columns       { display: none; }
+  .menu-cards-marquee { display: block; }
 
-  .menu-item-name   { font-size: 1.05rem; white-space: normal; }
+  /* Each card: fixed width for horizontal scroll */
+  .menu-card {
+    width: 160px;
+    flex-shrink: 0;
+    padding: 1.1rem 1rem 1.3rem;
+    border-radius: 14px;
+  }
 
-  .cta-heading      { font-size: clamp(1.7rem, 5vw, 2.5rem); }
-  .cta-btn-large    { padding: 1rem 2.5rem; font-size: 0.85rem; }
+  .title-highlight { font-size: clamp(1.7rem, 6vw, 2.2rem); }
+  .editorial-header { margin-bottom: 2.5rem; }
+
+  /* ─── CTA ─── */
+  .mrx-cta { padding: 80px 1.4rem; }
+  .cta-heading { font-size: clamp(1.6rem, 6vw, 2.4rem); }
+  .cta-btn-large { padding: 1rem 2.4rem; font-size: 0.84rem; }
 }
 
 /* ── SMALL MOBILE (480px and below) ── */
 @media (max-width: 480px) {
-  .mrx-hero-fullscreen {
-    padding: 72px 12px 16px;
-    height: 100svh;
-  }
+  .mrx-hero-fullscreen { padding: 68px 0 12px; }
 
-  .hero-eyebrow  { font-size: 0.6rem; letter-spacing: 0.18em; }
-  .hero-headline { font-size: clamp(1.7rem, 7vw, 2.2rem); }
+  .hero-eyebrow  { font-size: 0.58rem; letter-spacing: 0.18em; }
+  .hero-headline { font-size: clamp(1.45rem, 7vw, 1.9rem); }
 
   .barber-card-seat {
-    min-width: 170px;
-    max-width: 170px;
+    min-width: calc(90vw - 20px);
+    max-width: calc(90vw - 20px);
   }
 
-  .barber-chair-svg {
-    width: 80%;
-    max-width: 160px;
-  }
+  .barber-card { border-radius: 18px; }
+  .barber-name { font-size: 1.15rem; }
 
-  .hero-cards-row { gap: 12px; }
+  /* Full bleed marquee adjustments for small mobile */
+  .mrx-rituals { padding: 60px 0 72px; }
+  .rituals-content { padding: 0 1rem; }
+  .menu-cards-marquee { margin: 0 -1rem; }
 
-  .barber-card-content { padding: 1rem 1.1rem 1.3rem; }
-  .barber-name   { font-size: 1.05rem; }
+  .menu-card { padding: 1.1rem 1rem 1.3rem; border-radius: 14px; width: 140px; }
+  .menu-card-name { font-size: 0.92rem; }
+  .menu-card-price { font-size: 0.78rem; padding: 0.25rem 0.6rem; }
 
-  .hero-cards-stage { margin: 12px 0 8px; }
+  .title-highlight { font-size: clamp(1.5rem, 7vw, 1.9rem); }
 
-  .mrx-rituals  { padding: 70px 1rem; }
-  .mrx-cta      { padding: 70px 1rem; }
-
-  .title-highlight { font-size: clamp(1.6rem, 7vw, 2rem); }
-
-  .menu-item      { padding: 1rem 0.6rem; }
-  .menu-item-name { font-size: 0.95rem; }
-  .menu-item-dots { display: none; }
-  .menu-item-top  { flex-wrap: wrap; gap: 0.3rem; }
-
-  .cta-heading      { font-size: clamp(1.5rem, 7vw, 2rem); }
+  .mrx-cta { padding: 70px 1rem; }
+  .cta-heading { font-size: clamp(1.4rem, 7vw, 1.9rem); }
   .btn-primary-pill { padding: 0.9rem 2rem; font-size: 0.82rem; }
-  .cta-btn-large    { padding: 0.9rem 2rem; font-size: 0.82rem; }
+  .cta-btn-large { padding: 0.9rem 2rem; font-size: 0.82rem; }
 }
 
 /* ── VERY SMALL MOBILE (360px and below) ── */
 @media (max-width: 360px) {
   .barber-card-seat {
-    min-width: 148px;
-    max-width: 148px;
+    min-width: calc(92vw - 16px);
+    max-width: calc(92vw - 16px);
   }
 
-  .barber-chair-svg { max-width: 140px; }
-
-  .hero-headline { font-size: 1.65rem; }
-  .barber-name   { font-size: 0.95rem; }
+  .hero-headline { font-size: 1.4rem; }
+  .barber-name   { font-size: 1rem; }
 
   .btn-browse-all {
-    padding: 0.6rem 1.4rem;
-    font-size: 0.7rem;
+    padding: 0.55rem 1.3rem;
+    font-size: 0.68rem;
   }
 }

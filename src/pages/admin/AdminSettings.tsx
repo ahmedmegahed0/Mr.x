@@ -44,7 +44,8 @@ export default function AdminSettings() {
           getShopHours()
         ]);
         
-        const rawSettings = settingsData as any;
+        const rawResponse = settingsData as any;
+        const rawSettings = rawResponse?.data ?? rawResponse?.Data ?? rawResponse;
         setSettings({
           maximumBookingAdvanceDays: rawSettings.maximumBookingAdvanceDays ?? rawSettings.MaximumBookingAdvanceDays ?? 30,
           cancellationWindowHours: rawSettings.cancellationWindowHours ?? rawSettings.CancellationWindowHours ?? 24,

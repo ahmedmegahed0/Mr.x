@@ -34,6 +34,15 @@ export default function Home() {
   const [services, setServices] = useState<ServiceDTO[]>([]);
   const [isLoadingBarbers, setIsLoadingBarbers] = useState(true);
   const [isLoadingServices, setIsLoadingServices] = useState(true);
+  const [activeCard, setActiveCard] = useState(0);
+  const stageRef = (el: HTMLDivElement | null) => {
+    if (!el) return;
+    const handler = () => {
+      const cardW = el.scrollWidth / Math.max(barbers.length, 1);
+      setActiveCard(Math.round(el.scrollLeft / cardW));
+    };
+    el.addEventListener('scroll', handler, { passive: true });
+  };
 
   useEffect(() => {
     const fetchBarbers = async () => {
@@ -76,7 +85,7 @@ export default function Home() {
         </div>
 
         {/* — Barber Panels — */}
-        <div className="hero-cards-stage">
+        <div className="hero-cards-stage" ref={stageRef}>
           {isLoadingBarbers ? (
             <div className="hero-loading">
               <span className="loading-spinner"></span>
@@ -218,6 +227,13 @@ export default function Home() {
           )}
         </div>
 
+        {/* Scroll dots — mobile only */}
+        <div className="hero-scroll-indicator" aria-hidden="true">
+          {barbers.map((_, i) => (
+            <span key={i} className={`hero-dot${i === activeCard ? ' active' : ''}`} />
+          ))}
+        </div>
+
         {/* — Bottom CTA only — */}
         <div className="hero-bottom">
           <button className="btn-browse-all" onClick={() => navigate('/barbers')}>
@@ -240,20 +256,51 @@ export default function Home() {
             {isLoadingServices ? (
               <div className="loading-dots">Loading services...</div>
             ) : (
-              <div className="menu-columns">
-                {services.map(service => (
-                  <div key={service.id} className="menu-item">
-                    <div className="menu-item-top">
-                      <h4 className="menu-item-name">{service.name}</h4>
-                      <div className="menu-item-dots"></div>
-                      <span className="menu-item-price">${service.price.toFixed(2)}</span>
+              <>
+                {/* Desktop list */}
+                <div className="menu-columns">
+                  {services.map(service => (
+                    <div key={service.id} className="menu-item">
+                      <div className="menu-item-top">
+                        <h4 className="menu-item-name">{service.name}</h4>
+                        <div className="menu-item-dots"></div>
+                        <span className="menu-item-price">${service.price.toFixed(2)}</span>
+                      </div>
+                      {service.description && (
+                        <p className="menu-item-desc">{service.description}</p>
+                      )}
                     </div>
-                    {service.description && (
-                      <p className="menu-item-desc">{service.description}</p>
-                    )}
+                  ))}
+                </div>
+
+                {/* Mobile card grid */}
+                {/* Mobile infinite-loop marquee */}
+                <div className="menu-cards-marquee">
+                  <div className="menu-cards-track">
+                    {/* original set */}
+                    {services.map(service => (
+                      <div key={service.id} className="menu-card">
+                        <h4 className="menu-card-name">{service.name}</h4>
+                        {service.description && (
+                          <p className="menu-card-desc">{service.description}</p>
+                        )}
+                        <span className="menu-card-price">${service.price.toFixed(2)}</span>
+                      </div>
+                    ))}
+                    {/* duplicate set for seamless loop */}
+                    {services.map(service => (
+                      <div key={`dup-${service.id}`} className="menu-card">
+                        <h4 className="menu-card-name">{service.name}</h4>
+                        {service.description && (
+                          <p className="menu-card-desc">{service.description}</p>
+                        )}
+                        <span className="menu-card-price">${service.price.toFixed(2)}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+
+              </>
             )}
           </div>
         </div>

@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import './PublicLayout.css';
 import { useAuth } from '../context/AuthContext';
 import { ToastProvider } from '../context/ToastContext';
+import Logo from '../components/Logo';
 
 export default function PublicLayout() {
   const navigate = useNavigate();
@@ -49,8 +50,8 @@ export default function PublicLayout() {
       <div className="public-layout">
         <header className="public-header">
           <div className="public-header-content">
-            <div className="logo" onClick={() => { closeMenu(); navigate('/'); }}>
-              MR.X
+            <div className="logo-wrapper">
+              <Logo onClick={() => { closeMenu(); navigate('/'); }} />
             </div>
 
             {/* Desktop Nav */}
@@ -91,7 +92,9 @@ export default function PublicLayout() {
         {/* Mobile Drawer */}
         <nav className={`mobile-nav-drawer${menuOpen ? ' is-open' : ''}`}>
           <div className="mobile-nav-header">
-            <span className="mobile-nav-logo">MR.X</span>
+            <span className="mobile-nav-logo">
+              <Logo className="small" onClick={() => { closeMenu(); navigate('/'); }} />
+            </span>
             <button className="mobile-nav-close" onClick={closeMenu} aria-label="Close menu">
               &#x2715;
             </button>

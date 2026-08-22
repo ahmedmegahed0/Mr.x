@@ -45,19 +45,21 @@ export default function AdminDashboard() {
         };
 
         const unwrapStats = (obj: any): any => {
+          // Backend wraps response in { success, data: { ... } }
           let target = obj;
-          if (obj?.data && typeof obj.data === 'object') target = obj.data;
+          if (obj?.data && typeof obj.data === 'object' && !Array.isArray(obj.data)) target = obj.data;
           else if (obj?.Data && typeof obj.Data === 'object') target = obj.Data;
           else if (obj?.result && typeof obj.result === 'object') target = obj.result;
           else if (obj?.Result && typeof obj.Result === 'object') target = obj.Result;
-          
+
           if (!target) return null;
 
           return {
-            totalRevenue: target.totalRevenue ?? target.TotalRevenue ?? 0,
-            totalBookings: target.totalBookings ?? target.TotalBookings ?? 0,
-            totalCustomers: target.totalCustomers ?? target.TotalCustomers ?? 0,
-            totalBarbers: target.totalBarbers ?? target.TotalBarbers ?? 0,
+            // Map real backend field names → frontend DTO
+            totalRevenue:    target.totalConfirmedRevenue   ?? target.totalRevenue   ?? target.TotalRevenue   ?? 0,
+            totalBookings:   target.totalConfirmedBookings  ?? target.totalBookings  ?? target.TotalBookings  ?? 0,
+            totalCustomers:  target.totalUsers              ?? target.totalCustomers ?? target.TotalCustomers ?? 0,
+            totalBarbers:    target.totalBarbers            ?? target.TotalBarbers   ?? 0,
           };
         };
 
@@ -75,8 +77,8 @@ export default function AdminDashboard() {
           ...b,
           barberId: b.barberId ?? b.BarberId ?? b.id ?? b.Id,
           barberName: b.barberName ?? b.BarberName ?? b.fullName ?? b.FullName ?? 'Unknown',
-          bookingCount: b.bookingCount ?? b.BookingCount ?? 0,
-          revenue: b.revenue ?? b.Revenue ?? 0
+          bookingCount: b.confirmedBookingCount ?? b.bookingCount ?? b.BookingCount ?? 0,
+          revenue: b.totalRevenue ?? b.revenue ?? b.Revenue ?? 0
         }));
         setTopBarbers(mappedBarbers);
         
@@ -84,8 +86,8 @@ export default function AdminDashboard() {
           ...s,
           serviceId: s.serviceId ?? s.ServiceId ?? s.id ?? s.Id,
           serviceName: s.serviceName ?? s.ServiceName ?? s.name ?? s.Name ?? 'Unknown',
-          requestCount: s.requestCount ?? s.RequestCount ?? 0,
-          revenue: s.revenue ?? s.Revenue ?? 0
+          requestCount: s.bookingCount ?? s.requestCount ?? s.RequestCount ?? 0,
+          revenue: s.totalRevenue ?? s.revenue ?? s.Revenue ?? 0
         }));
         setTopServices(mappedServices);
       } catch (error) {

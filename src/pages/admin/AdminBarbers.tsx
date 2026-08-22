@@ -90,7 +90,21 @@ export default function AdminBarbers() {
         if (error.code === 'ERR_NETWORK') {
           showToast('Service is currently unavailable. Please try again later.', 'error');
         } else {
-          showToast('Failed to delete barber', 'error');
+          const resData = error.response?.data;
+          let errMsg = 'Failed to delete barber.';
+          if (typeof resData === 'string' && resData.trim() !== '') {
+             errMsg = resData;
+          } else if (resData?.message) {
+             errMsg = resData.message;
+          } else if (resData?.detail) {
+             errMsg = resData.detail;
+          } else if (resData?.title) {
+             errMsg = resData.title;
+          }
+          if (error.response?.status === 500) {
+             errMsg += ' (Usually means this barber has existing bookings and cannot be hard-deleted. Try deactivating them instead.)';
+          }
+          showToast(errMsg, 'error');
         }
       }
     }

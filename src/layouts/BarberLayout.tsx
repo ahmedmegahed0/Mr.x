@@ -3,6 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ToastProvider } from '../context/ToastContext';
 import './BarberLayout.css';
+import Logo from '../components/Logo';
 
 export default function BarberLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -24,7 +25,9 @@ export default function BarberLayout() {
       <div className="barber-layout">
         {/* Mobile Header */}
         <div className="mobile-header">
-          <div className="logo" onClick={() => navigate('/barber')}>MR.X Barber</div>
+          <div className="logo-wrapper" style={{ display: 'flex', alignItems: 'center' }}>
+            <Logo className="small" onClick={() => navigate('/barber')} />
+          </div>
           <button className="menu-toggle" onClick={toggleSidebar}>
             ☰
           </button>
@@ -36,7 +39,9 @@ export default function BarberLayout() {
         {/* Sidebar */}
         <aside className={`barber-sidebar ${isSidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
-            <div className="logo" onClick={() => navigate('/barber')}>MR.X Barber</div>
+            <div className="logo-wrapper">
+              <Logo onClick={() => navigate('/barber')} />
+            </div>
             <button className="close-sidebar" onClick={closeSidebar}>×</button>
           </div>
 

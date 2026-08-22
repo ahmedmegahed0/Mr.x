@@ -1,6 +1,7 @@
 import { NavLink, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './CustomerLayout.css';
+import Logo from '../components/Logo';
 
 export default function CustomerLayout() {
   const { handleLogout } = useAuth();
@@ -10,7 +11,7 @@ export default function CustomerLayout() {
       {/* Sidebar Navigation */}
       <aside className="customer-sidebar">
         <div className="sidebar-brand">
-          <Link to="/">MR.X</Link>
+          <Link to="/"><Logo /></Link>
         </div>
         
         <nav className="sidebar-nav">
@@ -42,7 +43,7 @@ export default function CustomerLayout() {
       {/* Main Content Area */}
       <div className="customer-main">
         <header className="customer-header-mobile">
-          <Link to="/" className="mobile-brand">MR.X</Link>
+          <Link to="/" className="mobile-brand"><Logo className="small" /></Link>
           <button className="btn-menu">☰</button>
         </header>
         <main className="customer-content">
