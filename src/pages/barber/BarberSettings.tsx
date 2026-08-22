@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { getBarberProfile, updateBookingSettings, BarberDTO } from '../../api/barbers.api';
 import { uploadProfilePicture, deleteProfilePicture } from '../../api/auth.api';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import './BarberSettings.css';
 
 export default function BarberSettings() {
@@ -18,6 +19,7 @@ export default function BarberSettings() {
   const [isUploadingPicture, setIsUploadingPicture] = useState(false);
 
   const { showToast } = useToast();
+  const { updateProfilePictureUrl } = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -74,6 +76,12 @@ export default function BarberSettings() {
       showToast('Profile picture updated successfully', 'success');
       // Reload profile to get the new image URL
       const data = await getBarberProfile();
+      // Add a cache buster so the browser fetches the new image instead of using cache
+      if (data.profilePictureUrl) {
+        const newUrl = `${data.profilePictureUrl}?t=${Date.now()}`;
+        data.profilePictureUrl = newUrl;
+        updateProfilePictureUrl(newUrl); // Update global auth context
+      }
       setProfile(data);
     } catch (err: any) {
       showToast('Failed to upload picture', 'error');

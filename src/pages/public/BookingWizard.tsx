@@ -85,7 +85,26 @@ export default function BookingWizard() {
     const fetchAvailability = async () => {
       try {
         const slots = await getBarberAvailability(id, selectedDate);
-        setAvailability(slots);
+        
+        // Filter out past slots if selectedDate is today
+        const today = new Date();
+        const localDateString = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        
+        if (selectedDate === localDateString) {
+          const currentHour = today.getHours();
+          const currentMinute = today.getMinutes();
+          
+          const validSlots = slots.filter(slot => {
+            const [hours, minutes] = slot.startTime.split(':').map(Number);
+            if (hours > currentHour) return true;
+            if (hours === currentHour && minutes > currentMinute) return true;
+            return false;
+          });
+          setAvailability(validSlots);
+        } else {
+          setAvailability(slots);
+        }
+        
         setSelectedSlot(''); // Reset slot on date change
       } catch (error) {
         console.error('Failed to fetch availability', error);

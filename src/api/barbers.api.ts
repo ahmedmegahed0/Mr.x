@@ -198,7 +198,19 @@ export const getBarberAvailability = async (id: string, date: string): Promise<A
 
 export const getBarberProfile = async (): Promise<BarberDTO> => {
   const response = await api.get('/api/barbers/me');
-  return response.data;
+  const b = response.data?.data || response.data || {};
+  
+  return {
+    id: b.id ?? b.Id ?? '',
+    fullName: b.fullName ?? b.FullName ?? 'Unknown Barber',
+    phoneNumber: b.phoneNumber ?? b.PhoneNumber ?? '',
+    email: b.email ?? b.Email ?? '',
+    bookingDurationMinutes: b.bookingDurationMinutes ?? b.BookingDurationMinutes ?? 30,
+    acceptingBookings: b.acceptingBookings ?? b.AcceptingBookings ?? true,
+    isActive: b.isActive ?? b.IsActive ?? true,
+    profilePictureUrl: b.profilePictureUrl ?? b.ProfilePictureUrl ?? '',
+    workingHours: b.workingHours ?? b.WorkingHours ?? []
+  };
 };
 
 export const updateBookingSettings = async (settings: { bookingDurationMinutes: number; acceptingBookings: boolean }): Promise<void> => {
@@ -224,6 +236,8 @@ export const getBarberBookings = async (params: {
   for (const obj of candidates) {
     // Direct paginated structure: { items: [...], totalCount, ... }
     if (obj?.items && Array.isArray(obj.items)) return obj as PaginatedResult<BarberBookingDTO>;
+    
+    // Capitalized properties pagination
     if (obj?.Items && Array.isArray(obj.Items)) {
       return {
         items: obj.Items,
@@ -233,9 +247,15 @@ export const getBarberBookings = async (params: {
         totalPages: obj.TotalPages ?? obj.totalPages ?? 1,
       };
     }
+
     // Direct array — wrap it
     if (Array.isArray(obj)) {
       return { items: obj, totalCount: obj.length, pageNumber: 1, pageSize: obj.length, totalPages: 1 };
+    }
+    
+    // .NET JSON reference preserving array: { $id: '1', $values: [...] }
+    if (obj?.$values && Array.isArray(obj.$values)) {
+      return { items: obj.$values, totalCount: obj.$values.length, pageNumber: 1, pageSize: obj.$values.length, totalPages: 1 };
     }
   }
 
