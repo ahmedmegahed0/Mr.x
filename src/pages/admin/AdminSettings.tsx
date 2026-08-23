@@ -118,11 +118,13 @@ export default function AdminSettings() {
     e.preventDefault();
     setIsSavingHours(true);
     try {
+      const formatTime = (time: string) => time.length === 5 ? `${time}:00` : time;
+      
       const payload = {
         workingHours: hours.map(h => ({
           dayOfWeek: h.dayOfWeek,
-          openingTime: h.openingTime,
-          closingTime: h.closingTime,
+          openingTime: formatTime(h.openingTime),
+          closingTime: formatTime(h.closingTime),
           isClosed: h.isClosed
         }))
       };
