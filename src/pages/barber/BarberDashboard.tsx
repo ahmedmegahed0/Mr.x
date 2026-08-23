@@ -93,9 +93,6 @@ export default function BarberDashboard() {
     }
   };
 
-  const canChangeStatus = (status: string) =>
-    !['arrived', 'didnotarrive', 'cancelled'].includes(status?.toLowerCase());
-
   // Determine header title based on selected date vs today
   const today = new Date();
   const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
