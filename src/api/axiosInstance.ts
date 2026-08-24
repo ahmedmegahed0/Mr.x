@@ -8,15 +8,15 @@ function normalizeTokens(raw: any): TokenResponseDTO {
     raw?.result, raw?.Result, raw?.payload, raw?.Payload,
   ].filter(Boolean);
   for (const obj of candidates) {
-    const accessToken  = obj?.accessToken  || obj?.AccessToken;
+    const accessToken = obj?.accessToken || obj?.AccessToken;
     const refreshToken = obj?.refreshToken || obj?.RefreshToken;
     if (accessToken && refreshToken) {
       return {
         accessToken,
-        accessTokenExpiresAt:  obj.accessTokenExpiresAt  || obj.AccessTokenExpiresAt  || '',
+        accessTokenExpiresAt: obj.accessTokenExpiresAt || obj.AccessTokenExpiresAt || '',
         refreshToken,
         refreshTokenExpiresAt: obj.refreshTokenExpiresAt || obj.RefreshTokenExpiresAt || '',
-        profilePictureUrl:     obj.profilePictureUrl     || obj.ProfilePictureUrl,
+        profilePictureUrl: obj.profilePictureUrl || obj.ProfilePictureUrl,
       };
     }
   }
@@ -52,7 +52,7 @@ export const clearTokens = (): void => {
 // ─── Axios Instance ─────────────────────────────────────────────
 const axiosInstance = axios.create({
   // Base URL: Process via configured API Base URL environment variable or constant
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://barbermrx.runasp.net',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://mrx.runasp.net',
   headers: { 'Content-Type': 'application/json' },
   timeout: 15_000,
 });
