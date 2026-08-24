@@ -150,14 +150,14 @@ export default function BookingWizard() {
     if (!id) return;
     
     const bookingPayload: any = {
-      barberId: isNaN(Number(id)) ? id : Number(id),
+      barberId: String(id),
       bookingDate: selectedDate,
-      startTime: selectedSlot.length === 5 ? `${selectedSlot}:00` : selectedSlot,
+      startTime: selectedSlot.split(':').length === 2 ? `${selectedSlot}:00`.padStart(8, '0') : selectedSlot.padStart(8, '0'),
       serviceIds: selectedServiceIds,
-      couponCode: couponCode || undefined,
-      fullName,
+      couponCode: couponCode ? couponCode.trim() : undefined,
+      fullName: fullName.trim(),
       phoneNumber: phoneNumber.replace(/^\+20|\s/g, ''),
-      customerName: fullName,
+      customerName: fullName.trim(),
       customerPhone: phoneNumber.replace(/^\+20|\s/g, '')
     };
 

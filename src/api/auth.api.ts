@@ -59,10 +59,10 @@ function extractTokens(raw: any): TokenResponseDTO {
     if (accessToken && refreshToken) {
       return {
         accessToken,
-        accessTokenExpiresAt:  obj.accessTokenExpiresAt  || obj.AccessTokenExpiresAt  || '',
+        accessTokenExpiresAt: obj.accessTokenExpiresAt || obj.AccessTokenExpiresAt || '',
         refreshToken,
         refreshTokenExpiresAt: obj.refreshTokenExpiresAt || obj.RefreshTokenExpiresAt || '',
-        profilePictureUrl:     obj.profilePictureUrl     || obj.ProfilePictureUrl,
+        profilePictureUrl: obj.profilePictureUrl || obj.ProfilePictureUrl,
       };
     }
   }
@@ -87,7 +87,7 @@ export const verifyCode = async (email: string, code: string): Promise<TokenResp
  * GET /api/Auth/google-login?returnUrl={encodedCallbackUrl}
  */
 export const getGoogleLoginUrl = (returnUrl: string): string => {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://barbermrx.runasp.net';
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://mrx.runasp.net';
   return `${baseUrl}/api/Auth/google-login?returnUrl=${encodeURIComponent(returnUrl)}`;
 };
 
@@ -99,11 +99,11 @@ export const refreshToken = async (refreshTokenValue: string): Promise<TokenResp
   const { data } = await axiosInstance.post('/api/Auth/refresh-token', { refreshToken: refreshTokenValue });
   // Normalize: handle both camelCase and PascalCase from ASP.NET backend
   return {
-    accessToken:           data.accessToken           || data.AccessToken           || '',
-    accessTokenExpiresAt:  data.accessTokenExpiresAt  || data.AccessTokenExpiresAt  || '',
-    refreshToken:          data.refreshToken          || data.RefreshToken          || '',
+    accessToken: data.accessToken || data.AccessToken || '',
+    accessTokenExpiresAt: data.accessTokenExpiresAt || data.AccessTokenExpiresAt || '',
+    refreshToken: data.refreshToken || data.RefreshToken || '',
     refreshTokenExpiresAt: data.refreshTokenExpiresAt || data.RefreshTokenExpiresAt || '',
-    profilePictureUrl:     data.profilePictureUrl     || data.ProfilePictureUrl,
+    profilePictureUrl: data.profilePictureUrl || data.ProfilePictureUrl,
   };
 };
 

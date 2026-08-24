@@ -85,10 +85,22 @@ export default function BarberWorkingHours() {
       await updateWorkingHours({ workingHours: payload });
       showToast('Working hours saved successfully', 'success');
     } catch (err: any) {
+      console.error('Save working hours error:', err);
       if (err.code === 'ERR_NETWORK') {
         showToast('Service is currently unavailable. Please try again later.', 'error');
       } else {
-        showToast('Failed to save working hours', 'error');
+        const resData = err.response?.data;
+        let errMsg = 'Failed to save working hours';
+        if (typeof resData === 'string' && resData) errMsg = resData;
+        else if (resData?.message) errMsg = resData.message;
+        else if (resData?.title) {
+          errMsg = resData.title;
+          if (resData.errors) {
+            const firstErr = Object.values(resData.errors)[0] as string[];
+            if (firstErr && firstErr.length > 0) errMsg += ': ' + firstErr[0];
+          }
+        }
+        showToast(errMsg, 'error');
       }
     } finally {
       setIsSaving(false);
