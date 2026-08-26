@@ -15,6 +15,8 @@ body, html {
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  /* Disable letter-spacing globally because it breaks Arabic cursive connections */
+  letter-spacing: normal !important;
 }
 
 #root {

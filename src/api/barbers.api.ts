@@ -17,6 +17,7 @@ export interface BarberDTO {
   isActive: boolean;
   profilePictureUrl?: string;
   workingHours: WorkingHour[];
+  cancellationPolicyHours?: number;
 }
 
 export interface AvailabilitySlot {
@@ -63,7 +64,8 @@ const FALLBACK_BARBERS: BarberDTO[] = [
     acceptingBookings: true,
     isActive: true,
     profilePictureUrl: 'https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?auto=format&fit=crop&q=80&w=800',
-    workingHours: []
+    workingHours: [],
+    cancellationPolicyHours: 2
   },
   {
     id: '2',
@@ -74,7 +76,8 @@ const FALLBACK_BARBERS: BarberDTO[] = [
     acceptingBookings: true,
     isActive: true,
     profilePictureUrl: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&q=80&w=800',
-    workingHours: []
+    workingHours: [],
+    cancellationPolicyHours: 2
   },
   {
     id: '3',
@@ -85,7 +88,8 @@ const FALLBACK_BARBERS: BarberDTO[] = [
     acceptingBookings: true,
     isActive: true,
     profilePictureUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=800',
-    workingHours: []
+    workingHours: [],
+    cancellationPolicyHours: 2
   }
 ];
 
@@ -122,7 +126,8 @@ export const getBarbers = async (): Promise<BarberDTO[]> => {
       acceptingBookings: b.acceptingBookings ?? b.AcceptingBookings ?? true,
       isActive: b.isActive ?? b.IsActive ?? true,
       profilePictureUrl: b.profilePictureUrl ?? b.ProfilePictureUrl ?? '',
-      workingHours: b.workingHours ?? b.WorkingHours ?? []
+      workingHours: b.workingHours ?? b.WorkingHours ?? [],
+      cancellationPolicyHours: b.cancellationPolicyHours ?? b.CancellationPolicyHours ?? 2
     }));
   } catch (error) {
     console.warn('Failed to fetch barbers, using fallback data.', error);
@@ -148,7 +153,8 @@ export const getBarberById = async (id: string): Promise<BarberDTO> => {
       acceptingBookings: b.acceptingBookings ?? b.AcceptingBookings ?? true,
       isActive: b.isActive ?? b.IsActive ?? true,
       profilePictureUrl: b.profilePictureUrl ?? b.ProfilePictureUrl ?? '',
-      workingHours: b.workingHours ?? b.WorkingHours ?? []
+      workingHours: b.workingHours ?? b.WorkingHours ?? [],
+      cancellationPolicyHours: b.cancellationPolicyHours ?? b.CancellationPolicyHours ?? 2
     };
   } catch (error) {
     console.warn(`Failed to fetch barber ${id}, using fallback data.`, error);
@@ -201,7 +207,8 @@ export const getBarberProfile = async (): Promise<BarberDTO> => {
     acceptingBookings: b.acceptingBookings ?? b.AcceptingBookings ?? true,
     isActive: b.isActive ?? b.IsActive ?? true,
     profilePictureUrl: b.profilePictureUrl ?? b.ProfilePictureUrl ?? '',
-    workingHours: b.workingHours ?? b.WorkingHours ?? []
+    workingHours: b.workingHours ?? b.WorkingHours ?? [],
+    cancellationPolicyHours: b.cancellationPolicyHours ?? b.CancellationPolicyHours ?? 2
   };
 };
 

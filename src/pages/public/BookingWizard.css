@@ -89,6 +89,10 @@
   border-color: #A98B62;
 }
 
+.service-info {
+  flex: 1;
+}
+
 .service-info h3 {
   margin: 0 0 0.25rem 0;
   font-size: 1.1rem;
@@ -104,8 +108,10 @@
 .service-price {
   font-weight: 600;
   color: #A98B62;
-  margin-right: 1rem;
-  margin-left: auto;
+  margin: 0 1rem;
+  width: 80px;
+  text-align: left;
+  flex-shrink: 0;
 }
 
 .service-checkbox {

@@ -39,7 +39,7 @@ export default function BarberDirectory() {
         {isLoading ? (
           <div className="barbers-grid">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="barber-card skeleton">
+              <div key={i} className="directory-barber-card skeleton">
                 <div className="skeleton-image"></div>
               </div>
             ))}
@@ -53,7 +53,7 @@ export default function BarberDirectory() {
           <div className="barbers-grid">
             {barbers.map(barber => (
               <div 
-                className="barber-card" 
+                className="directory-barber-card" 
                 key={barber.id}
                 onClick={() => {
                   if (barber.acceptingBookings) {
@@ -84,7 +84,7 @@ export default function BarberDirectory() {
                 </div>
                 
                 {/* Overlay Content */}
-                <div className="barber-card-content">
+                <div className="directory-barber-card-content">
                   <h2>{barber.fullName}</h2>
                   <p className="barber-role">حلاق محترف</p>
                   

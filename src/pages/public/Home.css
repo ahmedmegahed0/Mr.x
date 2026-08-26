@@ -35,7 +35,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 72px 40px 20px; /* Reduced padding because navbar is smaller */
+  padding: 140px 40px 20px; /* Increased padding significantly for navbar */
   overflow: hidden;
 }
 
@@ -82,8 +82,8 @@
 
 .hero-eyebrow {
   font-family: var(--font-sans);
-  font-size: 0.65rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 700;
   letter-spacing: 0.28em;
   color: var(--mrx-gold);
   text-transform: uppercase;
@@ -92,8 +92,8 @@
 
 .hero-headline {
   font-family: var(--font-serif);
-  font-size: clamp(1.4rem, 2.5vw, 2.2rem); /* Noticeably smaller */
-  font-weight: 400;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.01em;
   color: var(--mrx-text-main);
@@ -787,7 +787,7 @@
 
   /* ─── HERO: Full-width swipeable cards ─── */
   .mrx-hero-fullscreen {
-    padding: 72px 0 16px;
+    padding: 130px 0 16px; /* Greatly increased to clear scaled navbar logo */
     height: 100svh;
     justify-content: flex-start;
     gap: 0;
@@ -795,12 +795,13 @@
 
   .hero-top {
     padding: 0 20px;
+    margin-top: 80px; /* Pushes the text down below the navbar */
     margin-bottom: 12px;
     gap: 4px;
   }
 
-  .hero-eyebrow { font-size: 0.62rem; letter-spacing: 0.22em; }
-  .hero-headline { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+  .hero-eyebrow { font-size: 0.85rem; letter-spacing: 0.15em; font-weight: 700; }
+  .hero-headline { font-size: clamp(2.6rem, 11vw, 3.5rem); font-weight: 700; }
 
   /* Stage: centered snap carousel */
   .hero-cards-stage {

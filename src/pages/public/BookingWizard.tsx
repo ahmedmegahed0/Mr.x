@@ -406,7 +406,7 @@ export default function BookingWizard() {
               </div>
               <div className="alert-box alert-info">
                 <strong>سياسة الإلغاء:</strong>
-                متقدرش تلغي الحجز قبل الميعاد بمدة معينة (حسب سياسة الحلاق). يا ريت تلتزم بالمواعيد عشان منضطرش نحظر حسابك.
+                متقدرش تلغي الحجز قبل الميعاد بأقل من {(barber.cancellationPolicyHours || 2) === 1 ? 'ساعة' : (barber.cancellationPolicyHours || 2) === 2 ? 'ساعتين' : `${barber.cancellationPolicyHours || 2} ${(barber.cancellationPolicyHours || 2) <= 10 ? 'ساعات' : 'ساعة'}`}. يا ريت تلتزم بالمواعيد عشان منضطرش نحظر حسابك.
               </div>
             </div>
 

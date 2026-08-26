@@ -156,7 +156,7 @@ export default function SpectorDashboard() {
                   return (
                     <div className="bar-wrapper" key={idx}>
                       <div className="bar" style={{ height: `${heightPercent}%` }} title={`Revenue: $${data.totalRevenue}`}></div>
-                      <span className="bar-label">{data.month.substring(0, 3)}</span>
+                      <span className="bar-label">{data.month}</span>
                     </div>
                   );
                 })

@@ -73,7 +73,7 @@
 }
 
 /* Master Barber Card (Premium Aesthetic) */
-.barber-card {
+.directory-barber-card {
   position: relative;
   width: 100%;
   min-height: 450px; /* Fallback for browsers failing aspect-ratio */
@@ -89,7 +89,7 @@
   flex-direction: column;
 }
 
-.barber-card:hover {
+.directory-barber-card:hover {
   transform: translateY(-12px) scale(1.02);
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(201, 169, 110, 0.35);
   border-color: rgba(201, 169, 110, 0.3);
@@ -112,7 +112,7 @@
   transition: filter 0.6s cubic-bezier(0.2, 1, 0.3, 1), transform 0.6s cubic-bezier(0.2, 1, 0.3, 1);
 }
 
-.barber-card:hover .barber-image {
+.directory-barber-card:hover .barber-image {
   filter: brightness(0.95) saturate(1.05) contrast(1.05);
   transform: scale(1.05);
 }
@@ -153,7 +153,7 @@
   text-transform: uppercase;
 }
 
-.barber-card-content {
+.directory-barber-card-content {
   position: absolute;
   inset: 0;
   display: flex;
@@ -171,7 +171,7 @@
   transition: background 0.4s ease;
 }
 
-.barber-card:hover .barber-card-content {
+.directory-barber-card:hover .directory-barber-card-content {
   background: linear-gradient(
     to top,
     rgba(6, 5, 4, 0.98) 0%,
@@ -181,7 +181,7 @@
   );
 }
 
-.barber-card-content h2 {
+.directory-barber-card-content h2 {
   font-family: var(--font-serif, 'Playfair Display', serif);
   font-size: clamp(1.4rem, 2vw, 1.8rem);
   font-weight: 500;
@@ -249,7 +249,7 @@
   transform: translateY(10px);
 }
 
-.barber-card:hover .btn-book {
+.directory-barber-card:hover .btn-book {
   opacity: 1;
   transform: translateY(0);
 }
@@ -318,7 +318,7 @@
     gap: 2rem;
   }
 
-  .barber-card {
+  .directory-barber-card {
     min-height: 400px; /* Slightly smaller on very small screens */
   }
   
