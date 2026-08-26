@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getAdminServices, createAdminService, updateAdminService, deleteAdminService, AdminServiceDTO } from '../../api/admin.api';
 import AdminModal from '../../components/admin/AdminModal';
 import { useToast } from '../../context/ToastContext';
+import { parseApiError } from '../../utils/errorParser';
 import './AdminServices.css';
 import axios from 'axios';
 
@@ -50,7 +51,7 @@ export default function AdminServices() {
     } catch (error: any) {
       console.error('Failed to fetch services:', error);
       setServices([]);
-      setFetchError(error.response?.data?.message || error.message || 'Server is currently unreachable. Please try again later.');
+      setFetchError(parseApiError(error, 'السيرفر مش شغال دلوقتي. جرب تاني بعد شوية.'));
     } finally {
       setIsLoading(false);
     }
@@ -86,23 +87,23 @@ export default function AdminServices() {
     e.preventDefault();
     
     if (!name.trim()) {
-      showToast('Service name is required', 'error');
+      showToast('اسم الخدمة مطلوب', 'error');
       return;
     }
 
     if (name.length > 100) {
-      showToast('Service name cannot exceed 100 characters', 'error');
+      showToast('اسم الخدمة ميزيدش عن 100 حرف', 'error');
       return;
     }
 
     if (description.length > 500) {
-      showToast('Description cannot exceed 500 characters', 'error');
+      showToast('الوصف ميزيدش عن 500 حرف', 'error');
       return;
     }
     
     const parsedPrice = parseFloat(price.toString());
     if (isNaN(parsedPrice) || parsedPrice < 0) {
-      showToast('Price must be a valid positive number', 'error');
+      showToast('السعر لازم يكون رقم موجب', 'error');
       return;
     }
 
@@ -120,56 +121,31 @@ export default function AdminServices() {
     try {
       if (editingService) {
         await updateAdminService(editingService.id, payload);
-        showToast('Service updated successfully', 'success');
+        showToast('تم تحديث الخدمة بنجاح', 'success');
       } else {
         await createAdminService(payload);
-        showToast('Service created successfully', 'success');
+        showToast('تم إنشاء الخدمة بنجاح', 'success');
       }
       handleCloseModal();
       fetchServices();
-    } catch (error: any) {
-      console.error('Failed to save service:', error);
-      if (error.code === 'ERR_NETWORK') {
-        showToast('Service is currently unavailable. Please try again later.', 'error');
-      } else {
-        const resData = error.response?.data;
-        let errMsg = 'Failed to save service';
-        if (typeof resData === 'string' && resData.trim() !== '') {
-           errMsg = resData;
-        } else if (resData?.message) {
-           errMsg = resData.message;
-        } else if (resData?.title) {
-           // .NET Problem Details
-           errMsg = resData.title;
-           if (resData.errors) {
-              const firstErr = Object.values(resData.errors)[0] as string[];
-              if (firstErr && firstErr.length > 0) errMsg += ': ' + firstErr[0];
-           }
-        }
-        showToast(errMsg, 'error');
+      } catch (error: any) {
+        console.error('Failed to save service:', error);
+        showToast(parseApiError(error, 'فشل حفظ الخدمة'), 'error');
       }
-    }
   };
 
   const handleDelete = async (service: AdminServiceDTO) => {
-    if (window.confirm(`Are you sure you want to delete ${service.name}?`)) {
+    if (window.confirm(`متأكد إنك عايز تمسح ${service.name}؟`)) {
       try {
         await deleteAdminService(service.id);
-        showToast('Service deleted successfully', 'success');
+        showToast('تم مسح الخدمة بنجاح', 'success');
         fetchServices();
       } catch (error: any) {
         console.error('Failed to delete service:', error);
-        if (error.code === 'ERR_NETWORK') {
-          showToast('Service is currently unavailable. Please try again later.', 'error');
-        } else if (axios.isAxiosError(error) && error.response?.status === 409) {
-          showToast(error.response.data?.message || 'Cannot delete service because it is currently linked to existing bookings.', 'error');
+        if (axios.isAxiosError(error) && error.response?.status === 409) {
+          showToast(parseApiError(error, 'مينفعش نمسح الخدمة دي عشان مربوطة بحجوزات موجودة.'), 'error');
         } else {
-          const apiMessage = error.response?.data?.message || error.response?.data;
-          let finalMsg = 'Failed to delete service. It may be linked to existing bookings. Please edit and set it to Inactive instead.';
-          if (typeof apiMessage === 'string' && apiMessage.trim() !== '') {
-            finalMsg = apiMessage;
-          }
-          showToast(finalMsg, 'error');
+          showToast(parseApiError(error, 'فشل مسح الخدمة. ممكن تكون مربوطة بحجوزات. الأفضل تعدلها وتخليها غير نشطة.'), 'error');
         }
       }
     }
@@ -178,10 +154,10 @@ export default function AdminServices() {
   return (
     <div className="admin-services">
       <header className="admin-page-header">
-        <h1>Services Management</h1>
+        <h1>إدارة الخدمات</h1>
         <div className="header-actions">
           <button className="btn-primary" onClick={() => handleOpenModal()}>
-            Add New Service
+            إضافة خدمة جديدة
           </button>
         </div>
       </header>
@@ -190,12 +166,12 @@ export default function AdminServices() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Service Name</th>
-              <th>Description</th>
-              <th>Price</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>الرقم</th>
+              <th>اسم الخدمة</th>
+              <th>الوصف</th>
+              <th>السعر</th>
+              <th>الحالة</th>
+              <th>إجراءات</th>
             </tr>
           </thead>
           <tbody>
@@ -225,10 +201,10 @@ export default function AdminServices() {
                   <td>#{service.id}</td>
                   <td>{service.name}</td>
                   <td>{service.description || '-'}</td>
-                  <td>EGP {service.price.toFixed(2)}</td>
+                  <td>ج.م {service.price.toFixed(2)}</td>
                   <td>
                     <span className={`status-badge ${service.isActive ? 'active' : 'inactive'}`}>
-                      {service.isActive ? 'Active' : 'Inactive'}
+                      {service.isActive ? 'نشط' : 'غير نشط'}
                     </span>
                   </td>
                   <td>
@@ -236,13 +212,13 @@ export default function AdminServices() {
                       className="btn-action btn-edit"
                       onClick={() => handleOpenModal(service)}
                     >
-                      Edit
+                      تعديل
                     </button>
                     <button 
                       className="btn-action btn-delete"
                       onClick={() => handleDelete(service)}
                     >
-                      Delete
+                      مسح
                     </button>
                   </td>
                 </tr>
@@ -250,7 +226,7 @@ export default function AdminServices() {
             ) : (
               <tr>
                 <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: '#8C867E' }}>
-                  No services found.
+                  مفيش خدمات.
                 </td>
               </tr>
             )}
@@ -261,36 +237,36 @@ export default function AdminServices() {
       <AdminModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        title={editingService ? 'Edit Service' : 'Add New Service'}
+        title={editingService ? 'تعديل الخدمة' : 'إضافة خدمة جديدة'}
       >
         <form className="service-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="name">Service Name *</label>
+            <label htmlFor="name">اسم الخدمة *</label>
             <input
               type="text"
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Hair Cut"
+              placeholder="مثلاً: حلاقة شعر"
               maxLength={100}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="description">Description (Optional)</label>
+            <label htmlFor="description">الوصف (اختياري)</label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Professional hair cut"
+              placeholder="مثلاً: حلاقة شعر احترافية"
               maxLength={500}
               rows={3}
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="price">Price (EGP) *</label>
+            <label htmlFor="price">السعر (ج.م) *</label>
             <input
               type="number"
               id="price"
@@ -310,15 +286,15 @@ export default function AdminServices() {
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
             />
-            <label htmlFor="isActive">Is Active</label>
+            <label htmlFor="isActive">نشط</label>
           </div>
 
           <div className="form-actions">
             <button type="button" className="btn-cancel" onClick={handleCloseModal}>
-              Cancel
+              إلغاء
             </button>
             <button type="submit" className="btn-primary">
-              {editingService ? 'Save Changes' : 'Create Service'}
+              {editingService ? 'حفظ التغييرات' : 'إنشاء الخدمة'}
             </button>
           </div>
         </form>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getBookings, BookingDTO, BookingsFilterParams } from '../../api/admin.api';
 import { updateBookingStatus, BookingStatus } from '../../api/bookings.api';
 import { useToast } from '../../context/ToastContext';
+import { parseApiError } from '../../utils/errorParser';
 import './AdminBookings.css';
 
 export default function AdminBookings() {
@@ -50,7 +51,7 @@ export default function AdminBookings() {
     } catch (error) {
       console.error('Failed to fetch bookings:', error);
       setBookings([]);
-      setFetchError('Server is currently unreachable. Please try again later.');
+      setFetchError(parseApiError(error, 'السيرفر مش شغال دلوقتي. جرب تاني بعد شوية.'));
     } finally {
       setIsLoading(false);
     }
@@ -93,16 +94,12 @@ export default function AdminBookings() {
     setUpdatingId(bookingId);
     try {
       await updateBookingStatus(Number(bookingId), status);
-      const label = status === BookingStatus.Arrived ? 'Arrived' : 'Did Not Arrive';
-      showToast(`Booking #${bookingId} marked as ${label}`, 'success');
+      const label = status === BookingStatus.Arrived ? 'حضر' : 'محضرش';
+      showToast(`تم تحديث الحجز رقم ${bookingId} لـ ${label}`, 'success');
       // Refresh current page to reflect updated status
       fetchBookings(filters);
     } catch (err: any) {
-      if (err.code === 'ERR_NETWORK') {
-        showToast('Service is currently unavailable. Please try again later.', 'error');
-      } else {
-        showToast(`Failed to update booking #${bookingId} status.`, 'error');
-      }
+      showToast(parseApiError(err, `فشل تحديث حالة الحجز رقم ${bookingId}.`), 'error');
     } finally {
       setUpdatingId(null);
     }
@@ -126,12 +123,12 @@ export default function AdminBookings() {
   return (
     <div className="admin-bookings">
       <header className="admin-page-header">
-        <h1>Bookings Management</h1>
+        <h1>إدارة الحجوزات</h1>
       </header>
 
       <div className="filters-bar">
         <div className="filter-group">
-          <label>Date</label>
+          <label>التاريخ</label>
           <input
             type="date"
             name="date"
@@ -142,7 +139,7 @@ export default function AdminBookings() {
         </div>
 
         <div className="filter-group">
-          <label>Status</label>
+          <label>الحالة</label>
           <select
             name="status"
             value={filters.status || ''}
@@ -151,17 +148,17 @@ export default function AdminBookings() {
               setTimeout(() => fetchBookings({ ...filters, status: e.target.value, pageNumber: 1 }), 0);
             }}
           >
-            <option value="">All Statuses</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
-            <option value="Arrived">Arrived</option>
-            <option value="DidNotArrive">Did Not Arrive</option>
+            <option value="">كل الحالات</option>
+            <option value="Confirmed">مؤكد</option>
+            <option value="Completed">مكتمل</option>
+            <option value="Cancelled">ملغي</option>
+            <option value="Arrived">حضر</option>
+            <option value="DidNotArrive">محضرش</option>
           </select>
         </div>
 
         <button className="btn-clear-filters" onClick={handleClearFilters}>
-          Clear Filters
+          مسح الفلاتر
         </button>
       </div>
 
@@ -169,13 +166,13 @@ export default function AdminBookings() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Date &amp; Time</th>
-              <th>Customer</th>
-              <th>Barber</th>
-              <th>Total Price</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>رقم الحجز</th>
+              <th>التاريخ والوقت</th>
+              <th>العميل</th>
+              <th>الحلاق</th>
+              <th>الإجمالي</th>
+              <th>الحالة</th>
+              <th>إجراءات</th>
             </tr>
           </thead>
           <tbody>
@@ -209,7 +206,7 @@ export default function AdminBookings() {
                     <td>{new Date(booking.bookingDate).toLocaleString()}</td>
                     <td>{booking.customerName}</td>
                     <td>{booking.barberName}</td>
-                    <td>${booking.totalPrice.toLocaleString()}</td>
+                    <td>ج.م {booking.totalPrice.toLocaleString()}</td>
                     <td>
                       <span className={`status-badge ${getStatusClass(booking.status)}`}>
                         {booking.status}
@@ -222,9 +219,9 @@ export default function AdminBookings() {
                             className="btn-status arrived"
                             disabled={isUpdating}
                             onClick={() => handleStatusChange(booking.id, BookingStatus.Arrived)}
-                            title="Mark as Arrived"
+                            title="سجل كحضور"
                           >
-                            {isUpdating ? '…' : '✔ Arrived'}
+                            {isUpdating ? '…' : '✔ حضر'}
                           </button>
                         )}
                         {canMarkDidNotArrive(booking.status) && (
@@ -232,9 +229,9 @@ export default function AdminBookings() {
                             className="btn-status didnotarrive"
                             disabled={isUpdating}
                             onClick={() => handleStatusChange(booking.id, BookingStatus.DidNotArrive)}
-                            title="Mark as Did Not Arrive"
+                            title="سجل كغياب"
                           >
-                            {isUpdating ? '…' : '✖ No-Show'}
+                            {isUpdating ? '…' : '✖ محضرش'}
                           </button>
                         )}
                         {!canMarkArrived(booking.status) && !canMarkDidNotArrive(booking.status) && (
@@ -248,7 +245,7 @@ export default function AdminBookings() {
             ) : (
               <tr>
                 <td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: '#8C867E' }}>
-                  No bookings found.
+                  مفيش حجوزات.
                 </td>
               </tr>
             )}
@@ -258,7 +255,7 @@ export default function AdminBookings() {
         {!isLoading && totalCount > 0 && (
           <div className="pagination-container">
             <div className="pagination-info">
-              Showing {(filters.pageNumber! - 1) * filters.pageSize! + 1} - {Math.min(filters.pageNumber! * filters.pageSize!, totalCount)} of {totalCount}
+              عرض {(filters.pageNumber! - 1) * filters.pageSize! + 1} - {Math.min(filters.pageNumber! * filters.pageSize!, totalCount)} من {totalCount}
             </div>
             <div className="pagination-controls">
               <button
@@ -266,14 +263,14 @@ export default function AdminBookings() {
                 onClick={handlePrevPage}
                 disabled={filters.pageNumber! <= 1}
               >
-                Prev
+                اللي فات
               </button>
               <button
                 className="btn-page"
                 onClick={handleNextPage}
                 disabled={filters.pageNumber! >= totalPages}
               >
-                Next
+                اللي جاي
               </button>
             </div>
           </div>

@@ -16,7 +16,7 @@ export default function BarberDirectory() {
         setBarbers(data.filter(b => b.isActive)); // Only show active barbers
       } catch (err: any) {
         console.error('Failed to load barbers', err);
-        setError('Unable to load barbers at this time. Please try again later.');
+        setError('مش قادرين نحمل بيانات الحلاقين دلوقتي. جرب تاني بعد شوية.');
       } finally {
         setIsLoading(false);
       }
@@ -29,9 +29,9 @@ export default function BarberDirectory() {
       {/* Cinematic Hero */}
       <div className="directory-hero">
         <div className="hero-content">
-          <span className="directory-eyebrow">Meet The Masters</span>
-          <h1>Master Barbers</h1>
-          <p>Select your preferred craftsman to view their availability and book your next premium grooming session.</p>
+          <span className="directory-eyebrow">أحسن الحلاقين</span>
+          <h1>خبراء الحلاقة</h1>
+          <p>اختار الحلاق اللي يريحك وشوف مواعيده واحجز جلستك الجاية.</p>
         </div>
       </div>
 
@@ -78,7 +78,7 @@ export default function BarberDirectory() {
                   
                   {!barber.acceptingBookings && (
                     <div className="unavailable-overlay">
-                      <span>Fully Booked</span>
+                      <span>مفيش مواعيد</span>
                     </div>
                   )}
                 </div>
@@ -86,12 +86,12 @@ export default function BarberDirectory() {
                 {/* Overlay Content */}
                 <div className="barber-card-content">
                   <h2>{barber.fullName}</h2>
-                  <p className="barber-role">Master Barber</p>
+                  <p className="barber-role">حلاق محترف</p>
                   
                   <div className="barber-status">
                     <span className={`status-dot ${barber.acceptingBookings ? 'active' : 'inactive'}`}></span>
                     <span className="status-text">
-                      {barber.acceptingBookings ? 'Available Today' : 'Unavailable'}
+                      {barber.acceptingBookings ? 'متاح النهاردة' : 'غير متاح'}
                     </span>
                   </div>
 
@@ -103,7 +103,7 @@ export default function BarberDirectory() {
                     }}
                     disabled={!barber.acceptingBookings}
                   >
-                    BOOK APPOINTMENT &rarr;
+                    &larr; احجز ميعادك
                   </button>
                 </div>
               </div>
@@ -111,7 +111,7 @@ export default function BarberDirectory() {
           </div>
         ) : (
           <div className="directory-empty">
-            <p>No barbers are currently available. Please check back later.</p>
+            <p>مفيش حلاقين متاحين دلوقتي. جرب تاني بعدين.</p>
           </div>
         )}
       </div>

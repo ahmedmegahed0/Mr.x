@@ -24,7 +24,7 @@ export default function AdminLayout() {
         <div className="mobile-header">
           <div className="mobile-logo">
             <Logo className="small" onClick={() => navigate('/admin')} />
-            <span>Admin</span>
+            <span>الإدارة</span>
           </div>
           <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
             ☰
@@ -39,7 +39,7 @@ export default function AdminLayout() {
         <aside className={`admin-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="admin-sidebar-header">
             <Logo onClick={() => navigate('/admin')} />
-            <span>Admin Portal</span>
+            <span>لوحة الإدارة</span>
           </div>
           
           <nav className="admin-nav">
@@ -49,7 +49,7 @@ export default function AdminLayout() {
               onClick={() => setIsMobileMenuOpen(false)}
               className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
             >
-              Dashboard
+              لوحة التحكم
             </NavLink>
             
             {userRole?.toLowerCase() !== 'spector' && (
@@ -59,42 +59,42 @@ export default function AdminLayout() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
                 >
-                  Bookings
+                  الحجوزات
                 </NavLink>
                 <NavLink 
                   to="/admin/users" 
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
                 >
-                  Users
+                  المستخدمين
                 </NavLink>
                 <NavLink 
                   to="/admin/coupons" 
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
                 >
-                  Coupons
+                  الكوبونات
                 </NavLink>
                 <NavLink 
                   to="/admin/barbers" 
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
                 >
-                  Barbers
+                  الحلاقين
                 </NavLink>
                 <NavLink 
                   to="/admin/services" 
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
                 >
-                  Services
+                  الخدمات
                 </NavLink>
                 <NavLink 
                   to="/admin/settings" 
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}
                 >
-                  Settings
+                  الإعدادات
                 </NavLink>
               </>
             )}
@@ -106,12 +106,12 @@ export default function AdminLayout() {
               className="admin-nav-link public-link"
               target="_blank"
             >
-              View Public Site ↗
+              الموقع الرئيسي ↗
             </NavLink>
           </nav>
 
           <button className="admin-logout-btn" onClick={onLogout}>
-            Sign Out
+            تسجيل الخروج
           </button>
         </aside>
 

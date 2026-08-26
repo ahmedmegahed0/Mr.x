@@ -47,13 +47,13 @@ export default function BarberLayout() {
 
           <nav className="sidebar-nav">
             <NavLink to="/barber" end className={({ isActive }) => (isActive ? 'active' : '')} onClick={closeSidebar}>
-              <span className="nav-icon">📅</span> Dashboard
+              <span className="nav-icon">📅</span> لوحة التحكم
             </NavLink>
             <NavLink to="/barber/working-hours" className={({ isActive }) => (isActive ? 'active' : '')} onClick={closeSidebar}>
-              <span className="nav-icon">⏰</span> Working Hours
+              <span className="nav-icon">⏰</span> مواعيد العمل
             </NavLink>
             <NavLink to="/barber/settings" className={({ isActive }) => (isActive ? 'active' : '')} onClick={closeSidebar}>
-              <span className="nav-icon">⚙️</span> Settings
+              <span className="nav-icon">⚙️</span> الإعدادات
             </NavLink>
             
             <div className="nav-divider" style={{ margin: '1rem 0', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}></div>
@@ -64,13 +64,13 @@ export default function BarberLayout() {
               target="_blank"
               style={{ color: '#d4af37', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '0.75rem 1rem' }}
             >
-              <span className="nav-icon">🌐</span> View Public Site ↗
+              <span className="nav-icon">🌐</span> الموقع الرئيسي ↗
             </NavLink>
           </nav>
 
           <div className="sidebar-footer">
             <button className="btn-logout" onClick={handleLogout}>
-              Sign Out
+              تسجيل الخروج
             </button>
           </div>
         </aside>

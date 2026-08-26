@@ -56,9 +56,9 @@ export default function PublicLayout() {
           {/* Desktop Nav */}
           <nav className="public-nav">
             <div className="nav-links">
-              <a href="/#barbers" className="nav-link" onClick={(e) => handleNavClick(e, '#barbers')}>The Barbers</a>
-              <a href="/#services" className="nav-link" onClick={(e) => handleNavClick(e, '#services')}>Services</a>
-              <a href="/about" className="nav-link" onClick={(e) => { e.preventDefault(); closeMenu(); navigate('/about'); }}>About</a>
+              <a href="/#barbers" className="nav-link" onClick={(e) => handleNavClick(e, '#barbers')}>الحلاقين</a>
+              <a href="/#services" className="nav-link" onClick={(e) => handleNavClick(e, '#services')}>خدماتنا</a>
+              <a href="/about" className="nav-link" onClick={(e) => { e.preventDefault(); closeMenu(); navigate('/about'); }}>عننا</a>
             </div>
             {isAuthenticated ? (
               <div className="user-menu-container" style={{ position: 'relative' }}>
@@ -82,14 +82,14 @@ export default function PublicLayout() {
                       style={{ width: '100%', border: 'none', textAlign: 'left', padding: '0.5rem 1rem' }} 
                       onClick={() => { setUserMenuOpen(false); navigate('/dashboard'); }}
                     >
-                      Dashboard
+                      لوحة التحكم
                     </button>
                     <button 
                       className="btn-auth" 
                       style={{ width: '100%', border: 'none', textAlign: 'left', padding: '0.5rem 1rem', color: '#ff6b6b' }} 
                       onClick={() => { setUserMenuOpen(false); handleLogout(); }}
                     >
-                      Sign Out
+                      تسجيل الخروج
                     </button>
                   </div>
                 )}
@@ -99,7 +99,7 @@ export default function PublicLayout() {
                 className="btn-auth"
                 onClick={() => navigate('/login')}
               >
-                Sign In
+                تسجيل الدخول
               </button>
             )}
           </nav>
@@ -135,9 +135,9 @@ export default function PublicLayout() {
           </button>
         </div>
         <div className="mobile-nav-links">
-          <a href="/#barbers" className="mobile-nav-link" onClick={(e) => handleNavClick(e, '#barbers')}>The Barbers</a>
-          <a href="/#services" className="mobile-nav-link" onClick={(e) => handleNavClick(e, '#services')}>Services</a>
-          <a href="/about" className="mobile-nav-link" onClick={(e) => { e.preventDefault(); closeMenu(); navigate('/about'); }}>About</a>
+          <a href="/#barbers" className="mobile-nav-link" onClick={(e) => handleNavClick(e, '#barbers')}>الحلاقين</a>
+          <a href="/#services" className="mobile-nav-link" onClick={(e) => handleNavClick(e, '#services')}>خدماتنا</a>
+          <a href="/about" className="mobile-nav-link" onClick={(e) => { e.preventDefault(); closeMenu(); navigate('/about'); }}>عننا</a>
         </div>
         <div className="mobile-nav-footer">
           {isAuthenticated ? (
@@ -146,14 +146,14 @@ export default function PublicLayout() {
                 className="btn-auth btn-auth-mobile"
                 onClick={() => { closeMenu(); navigate('/dashboard'); }}
               >
-                Dashboard
+                لوحة التحكم
               </button>
               <button
                 className="btn-auth btn-auth-mobile"
                 style={{ marginTop: '1rem', borderColor: 'rgba(255, 107, 107, 0.4)', color: '#ff6b6b' }}
                 onClick={() => { closeMenu(); handleLogout(); }}
               >
-                Sign Out
+                تسجيل الخروج
               </button>
             </>
           ) : (
@@ -161,7 +161,7 @@ export default function PublicLayout() {
               className="btn-auth btn-auth-mobile"
               onClick={() => { closeMenu(); navigate('/login'); }}
             >
-              Sign In
+              تسجيل الدخول
             </button>
           )}
         </div>
@@ -173,7 +173,7 @@ export default function PublicLayout() {
 
       <footer className="public-footer">
         <div className="footer-content">
-          <p>&copy; {new Date().getFullYear()} MR.X Barbershop. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} MR. X BARBER. جميع الحقوق محفوظة.</p>
         </div>
       </footer>
     </div>

@@ -8,16 +8,17 @@ import {
   ShopWorkingHourDTO
 } from '../../api/admin.api';
 import { useToast } from '../../context/ToastContext';
+import { parseApiError } from '../../utils/errorParser';
 import './AdminSettings.css';
 
 const DEFAULT_DAYS = [
-  { dayOfWeek: 0, dayName: 'Sunday' },
-  { dayOfWeek: 1, dayName: 'Monday' },
-  { dayOfWeek: 2, dayName: 'Tuesday' },
-  { dayOfWeek: 3, dayName: 'Wednesday' },
-  { dayOfWeek: 4, dayName: 'Thursday' },
-  { dayOfWeek: 5, dayName: 'Friday' },
-  { dayOfWeek: 6, dayName: 'Saturday' },
+  { dayOfWeek: 0, dayName: 'الأحد' },
+  { dayOfWeek: 1, dayName: 'الإثنين' },
+  { dayOfWeek: 2, dayName: 'الثلاثاء' },
+  { dayOfWeek: 3, dayName: 'الأربعاء' },
+  { dayOfWeek: 4, dayName: 'الخميس' },
+  { dayOfWeek: 5, dayName: 'الجمعة' },
+  { dayOfWeek: 6, dayName: 'السبت' },
 ];
 
 export default function AdminSettings() {
@@ -92,7 +93,7 @@ export default function AdminSettings() {
         setHours(completeHours);
       } catch (error: any) {
         console.error('Failed to load settings', error);
-        showToast(error.response?.data?.message || error.message || 'Failed to load settings', 'error');
+        showToast(parseApiError(error, 'فشل تحميل الإعدادات'), 'error');
       } finally {
         setIsLoading(false);
       }
@@ -106,9 +107,9 @@ export default function AdminSettings() {
     setIsSavingSettings(true);
     try {
       await updateSettings(settings);
-      showToast('Booking rules updated successfully', 'success');
+      showToast('تم تحديث قواعد الحجز بنجاح', 'success');
     } catch (error) {
-      showToast('Failed to update booking rules', 'error');
+      showToast(parseApiError(error, 'فشل تحديث قواعد الحجز'), 'error');
     } finally {
       setIsSavingSettings(false);
     }
@@ -129,9 +130,9 @@ export default function AdminSettings() {
         }))
       };
       await updateShopHours(payload);
-      showToast('Shop hours updated successfully', 'success');
+      showToast('تم تحديث مواعيد العمل بنجاح', 'success');
     } catch (error) {
-      showToast('Failed to update shop hours', 'error');
+      showToast(parseApiError(error, 'فشل تحديث مواعيد العمل'), 'error');
     } finally {
       setIsSavingHours(false);
     }
@@ -147,9 +148,9 @@ export default function AdminSettings() {
     return (
       <div className="admin-settings">
         <header className="admin-page-header">
-          <h1>Global Settings</h1>
+          <h1>الإعدادات العامة</h1>
         </header>
-        <div className="loading-overlay">Loading settings...</div>
+        <div className="loading-overlay">جاري تحميل الإعدادات...</div>
       </div>
     );
   }
@@ -157,20 +158,20 @@ export default function AdminSettings() {
   return (
     <div className="admin-settings">
       <header className="admin-page-header">
-        <h1>Global Settings</h1>
+        <h1>الإعدادات العامة</h1>
       </header>
 
       {/* Booking Rules Panel */}
       <div className="settings-panel">
         <div className="settings-panel-header">
-          <h2>Booking Rules</h2>
-          <p>Configure general boundaries for customer appointments.</p>
+          <h2>قواعد الحجز</h2>
+          <p>حدد القواعد العامة لمواعيد العملاء.</p>
         </div>
         
         <form onSubmit={handleSettingsSubmit}>
           <div className="settings-form-row">
             <div className="admin-form-group">
-              <label>Maximum Booking Advance (Days)</label>
+              <label>أقصى فترة للحجز مقدماً (بالأيام)</label>
               <input 
                 type="number" 
                 min="1" max="365"
@@ -181,7 +182,7 @@ export default function AdminSettings() {
             </div>
             
             <div className="admin-form-group">
-              <label>Cancellation Window (Hours)</label>
+              <label>فترة السماح للإلغاء (بالساعات)</label>
               <input 
                 type="number" 
                 min="0" max="168"
@@ -194,7 +195,7 @@ export default function AdminSettings() {
           
           <div className="settings-actions">
             <button type="submit" className="btn-primary" disabled={isSavingSettings}>
-              {isSavingSettings ? 'Saving...' : 'Save Booking Rules'}
+              {isSavingSettings ? 'جاري الحفظ...' : 'حفظ قواعد الحجز'}
             </button>
           </div>
         </form>
@@ -203,8 +204,8 @@ export default function AdminSettings() {
       {/* Shop Working Hours Panel */}
       <div className="settings-panel">
         <div className="settings-panel-header">
-          <h2>Shop Working Hours</h2>
-          <p>Set the standard weekly schedule. Days are mapped from Sunday (0) to Saturday (6).</p>
+          <h2>مواعيد عمل المحل</h2>
+          <p>حدد مواعيد العمل الأسبوعية الأساسية للمحل.</p>
         </div>
         
         <form onSubmit={handleHoursSubmit}>
@@ -221,7 +222,7 @@ export default function AdminSettings() {
                     onChange={(e) => handleHourChange(index, 'isClosed', !e.target.checked)}
                   />
                   <div className="toggle-slider"></div>
-                  <span className="toggle-label">{!hour.isClosed ? 'Open' : 'Closed'}</span>
+                  <span className="toggle-label">{!hour.isClosed ? 'مفتوح' : 'مغلق'}</span>
                 </label>
 
                 <div className="admin-form-group" style={{ marginBottom: 0 }}>
@@ -249,7 +250,7 @@ export default function AdminSettings() {
 
           <div className="settings-actions">
             <button type="submit" className="btn-primary" disabled={isSavingHours}>
-              {isSavingHours ? 'Saving...' : 'Save Schedule'}
+              {isSavingHours ? 'جاري الحفظ...' : 'حفظ المواعيد'}
             </button>
           </div>
         </form>

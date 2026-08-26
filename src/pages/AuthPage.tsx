@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { sendVerificationCode, verifyCode, getGoogleLoginUrl } from '../api/auth.api';
+import { parseApiError } from '../utils/errorParser';
 import '../components/auth/MrxAuth.css';
 
 // ─── Icons ──────────────────────────────────────────────────────
@@ -67,7 +68,7 @@ export default function AuthPage() {
     setErrorMsg('');
     
     if (!isValidEmail(email)) {
-      setErrorMsg('Please enter a valid email address.');
+      setErrorMsg('يا ريت تكتب إيميل صح.');
       return;
     }
     
@@ -76,9 +77,8 @@ export default function AuthPage() {
       await sendVerificationCode(email.trim());
       setOtpSent(true);
       setTimer(OTP_COOLDOWN);
-    } catch (err: unknown) {
-      const errorObj = err as { response?: { data?: { message?: string } }, message?: string };
-      setErrorMsg(errorObj?.response?.data?.message || errorObj?.message || 'Failed to send verification code.');
+    } catch (err: any) {
+      setErrorMsg(parseApiError(err, 'مش قادرين نبعت كود التأكيد.'));
     } finally {
       setLoading(false);
     }
@@ -89,7 +89,7 @@ export default function AuthPage() {
     setErrorMsg('');
 
     if (otpValue.length !== OTP_LENGTH) {
-      setErrorMsg(`Please enter a ${OTP_LENGTH}-digit code.`);
+      setErrorMsg(`يا ريت تكتب كود من ${OTP_LENGTH} أرقام.`);
       return;
     }
 
@@ -97,9 +97,8 @@ export default function AuthPage() {
     try {
       const tokens = await verifyCode(email.trim(), otpValue);
       handleLoginSuccess(tokens);
-    } catch (err: unknown) {
-      const errorObj = err as { response?: { data?: { message?: string } }, message?: string };
-      setErrorMsg(errorObj?.response?.data?.message || errorObj?.message || 'Invalid or expired code.');
+    } catch (err: any) {
+      setErrorMsg(parseApiError(err, 'الكود غلط أو مدته خلصت.'));
     } finally {
       setLoading(false);
     }
@@ -113,9 +112,8 @@ export default function AuthPage() {
       await sendVerificationCode(email.trim());
       setTimer(OTP_COOLDOWN);
       setOtpValue('');
-    } catch (err: unknown) {
-      const errorObj = err as { response?: { data?: { message?: string } }, message?: string };
-      setErrorMsg(errorObj?.response?.data?.message || errorObj?.message || 'Failed to resend code.');
+    } catch (err: any) {
+      setErrorMsg(parseApiError(err, 'مش قادرين نبعت الكود تاني.'));
     } finally {
       setLoading(false);
     }
@@ -125,19 +123,19 @@ export default function AuthPage() {
     <div className="mrx-auth-page">
       <div className="mrx-auth-card">
         <div className="mrx-auth-header">
-          <h1 className="mrx-auth-title">WELCOME BACK</h1>
-          <p className="mrx-auth-subtitle">Enter your email to access your premium grooming platform.</p>
+          <h1 className="mrx-auth-title">أهلاً بيك</h1>
+          <p className="mrx-auth-subtitle">اكتب إيميلك عشان تدخل عالم الحلاقة على أصولها.</p>
         </div>
 
         <button type="button" className="mrx-btn mrx-btn-google" onClick={handleGoogleLogin}>
-          <GoogleIcon /> Continue with Google
+          <GoogleIcon /> كمل بـ Google
         </button>
 
-        <div className="mrx-divider">or</div>
+        <div className="mrx-divider">أو</div>
 
         {!otpSent ? (
           <form onSubmit={handleSendCode} className="mrx-form-group">
-            <label className="mrx-label" htmlFor="email-input">Email address</label>
+            <label className="mrx-label" htmlFor="email-input">البريد الإلكتروني (الإيميل)</label>
             <input
               id="email-input"
               type="email"
@@ -161,17 +159,17 @@ export default function AuthPage() {
               disabled={loading || !email.trim()}
             >
               {loading ? (
-                <><div className="mrx-spinner" /> Sending...</>
+                <><div className="mrx-spinner" /> جاري الإرسال...</>
               ) : (
-                'Send Verification Code'
+                'ابعت كود التأكيد'
               )}
             </button>
           </form>
         ) : (
           <form onSubmit={handleVerifyOtp} className="mrx-form-group">
-            <label className="mrx-label" htmlFor="otp-input">Verification Code</label>
+            <label className="mrx-label" htmlFor="otp-input">كود التأكيد</label>
             <p className="mrx-auth-subtitle" style={{ marginBottom: '0.5rem' }}>
-              We sent a code to <strong>{email}</strong>
+              بعتنا كود على <strong>{email}</strong>
             </p>
             <input
               id="otp-input"
@@ -202,9 +200,9 @@ export default function AuthPage() {
               disabled={loading || otpValue.length < OTP_LENGTH}
             >
               {loading ? (
-                <><div className="mrx-spinner" /> Verifying...</>
+                <><div className="mrx-spinner" /> جاري التأكد...</>
               ) : (
-                'Verify & Sign In'
+                'تأكيد وتسجيل الدخول'
               )}
             </button>
 
@@ -215,11 +213,11 @@ export default function AuthPage() {
                 onClick={() => { setOtpSent(false); setTimer(0); setOtpValue(''); setErrorMsg(''); }}
                 disabled={loading}
               >
-                Change Email
+                تغيير الإيميل
               </button>
               
               {timer > 0 ? (
-                <span>Resend in {formatTimer(timer)}</span>
+                <span>ابعت تاني بعد {formatTimer(timer)}</span>
               ) : (
                 <button 
                   type="button" 
@@ -227,7 +225,7 @@ export default function AuthPage() {
                   onClick={handleResend}
                   disabled={loading}
                 >
-                  Resend Code
+                  ابعت الكود تاني
                 </button>
               )}
             </div>

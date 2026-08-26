@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getUsers, blockUser, unblockUser, UserDTO, UsersFilterParams } from '../../api/admin.api';
+import { parseApiError } from '../../utils/errorParser';
 import './AdminUsers.css';
 
 export default function AdminUsers() {
@@ -45,7 +46,7 @@ export default function AdminUsers() {
     } catch (error) {
       console.error('Failed to fetch users:', error);
       setUsers([]);
-      setFetchError('Server is currently unreachable. Please try again later.');
+      setFetchError(parseApiError(error, 'السيرفر مش شغال دلوقتي. جرب تاني بعد شوية.'));
     } finally {
       setIsLoading(false);
     }
@@ -84,8 +85,9 @@ export default function AdminUsers() {
   };
 
   const handleToggleBlock = async (user: UserDTO) => {
-    const action = user.isActive ? 'block' : 'unblock';
-    const confirmMessage = `Are you sure you want to ${action} user ${user.fullName}?`;
+    const actionEn = user.isActive ? 'block' : 'unblock';
+    const actionAr = user.isActive ? 'تحظر' : 'تفك حظر';
+    const confirmMessage = `متأكد إنك عايز ${actionAr} المستخدم ${user.fullName}؟`;
     
     if (window.confirm(confirmMessage)) {
       try {
@@ -97,8 +99,8 @@ export default function AdminUsers() {
         // Refresh current page
         fetchUsers(filters);
       } catch (error) {
-        console.error(`Failed to ${action} user`, error);
-        alert(`Failed to ${action} user. Please try again.`);
+        console.error(`Failed to ${actionEn} user`, error);
+        alert(parseApiError(error, `فشل ${actionAr} المستخدم. جرب تاني.`));
       }
     }
   };
@@ -106,16 +108,16 @@ export default function AdminUsers() {
   return (
     <div className="admin-users">
       <header className="admin-page-header">
-        <h1>Users Management</h1>
+        <h1>إدارة المستخدمين</h1>
       </header>
 
       <div className="filters-bar">
         <div className="filter-group" style={{ flex: 1 }}>
-          <label>Search (Name or Email)</label>
+          <label>بحث (بالاسم أو الإيميل)</label>
           <input 
             type="text" 
             name="searchTerm" 
-            placeholder="e.g. John Doe"
+            placeholder="مثلاً: أحمد محمد"
             value={filters.searchTerm || ''} 
             onChange={handleFilterChange} 
             onKeyDown={(e) => e.key === 'Enter' && handleApplyFilters()}
@@ -123,16 +125,16 @@ export default function AdminUsers() {
         </div>
         
         <div className="filter-group">
-          <label>Status</label>
+          <label>الحالة</label>
           <select name="isActive" value={filters.isActive?.toString() || ''} onChange={(e) => { handleFilterChange(e); setTimeout(() => fetchUsers({ ...filters, isActive: e.target.value, pageNumber: 1 }), 0); }}>
-            <option value="">All Users</option>
-            <option value="true">Active</option>
-            <option value="false">Blocked</option>
+            <option value="">كل المستخدمين</option>
+            <option value="true">نشط</option>
+            <option value="false">محظور</option>
           </select>
         </div>
 
         <button className="btn-clear-filters" onClick={handleClearFilters}>
-          Clear Filters
+          مسح الفلاتر
         </button>
       </div>
 
@@ -140,13 +142,13 @@ export default function AdminUsers() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Full Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Created Date</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>الرقم</th>
+              <th>الاسم بالكامل</th>
+              <th>الإيميل</th>
+              <th>التليفون</th>
+              <th>تاريخ التسجيل</th>
+              <th>الحالة</th>
+              <th>إجراءات</th>
             </tr>
           </thead>
           <tbody>
@@ -181,7 +183,7 @@ export default function AdminUsers() {
                   <td>{new Date(user.createdDate).toLocaleDateString()}</td>
                   <td>
                     <span className={`status-badge ${user.isActive ? 'active' : 'blocked'}`}>
-                      {user.isActive ? 'Active' : 'Blocked'}
+                      {user.isActive ? 'نشط' : 'محظور'}
                     </span>
                   </td>
                   <td>
@@ -189,7 +191,7 @@ export default function AdminUsers() {
                       className={`btn-action ${user.isActive ? 'btn-block' : 'btn-unblock'}`}
                       onClick={() => handleToggleBlock(user)}
                     >
-                      {user.isActive ? 'Block' : 'Unblock'}
+                      {user.isActive ? 'حظر' : 'فك الحظر'}
                     </button>
                   </td>
                 </tr>
@@ -197,7 +199,7 @@ export default function AdminUsers() {
             ) : (
               <tr>
                 <td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: '#8C867E' }}>
-                  No users found.
+                  مفيش مستخدمين.
                 </td>
               </tr>
             )}
@@ -207,7 +209,7 @@ export default function AdminUsers() {
         {!isLoading && totalCount > 0 && (
           <div className="pagination-container">
             <div className="pagination-info">
-              Showing {(filters.pageNumber! - 1) * filters.pageSize! + 1} - {Math.min(filters.pageNumber! * filters.pageSize!, totalCount)} of {totalCount}
+              عرض {(filters.pageNumber! - 1) * filters.pageSize! + 1} - {Math.min(filters.pageNumber! * filters.pageSize!, totalCount)} من {totalCount}
             </div>
             <div className="pagination-controls">
               <button 
@@ -215,14 +217,14 @@ export default function AdminUsers() {
                 onClick={handlePrevPage} 
                 disabled={filters.pageNumber! <= 1}
               >
-                Prev
+                اللي فات
               </button>
               <button 
                 className="btn-page" 
                 onClick={handleNextPage} 
                 disabled={filters.pageNumber! >= totalPages}
               >
-                Next
+                اللي جاي
               </button>
             </div>
           </div>

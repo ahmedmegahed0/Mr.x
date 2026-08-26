@@ -28,7 +28,7 @@ export default function AuthCallbackPage() {
     if (error) {
       setStatus('error');
       if (error.includes('Invalid column name') || error.includes('500')) {
-        setErrorMsg('Server error occurred. Please try again later or contact support.');
+        setErrorMsg('حصل مشكلة في السيرفر. جرب تاني بعد شوية أو كلم الدعم.');
       } else {
         setErrorMsg(error);
       }
@@ -56,7 +56,7 @@ export default function AuthCallbackPage() {
       return () => clearTimeout(timer);
     } else {
       setStatus('error');
-      setErrorMsg('Invalid authentication tokens received.');
+      setErrorMsg('بيانات الدخول اللي وصلت مش مظبوطة.');
     }
   }, [searchParams, handleLoginSuccess]);
 
@@ -66,16 +66,16 @@ export default function AuthCallbackPage() {
         {status === 'loading' && (
           <>
             <div className="mrx-spinner mrx-spinner-large" />
-            <h2 className="mrx-auth-title" style={{ fontSize: '1.5rem', marginTop: '1rem' }}>Authenticating...</h2>
-            <p className="mrx-auth-subtitle">Please wait while we securely sign you in.</p>
+            <h2 className="mrx-auth-title" style={{ fontSize: '1.5rem', marginTop: '1rem' }}>جاري تسجيل الدخول...</h2>
+            <p className="mrx-auth-subtitle">استنى ثواني، بندخلك على حسابك بأمان.</p>
           </>
         )}
 
         {status === 'success' && (
           <>
             <CheckIcon />
-            <h2 className="mrx-auth-title" style={{ fontSize: '1.5rem', marginTop: '1rem' }}>Success</h2>
-            <p className="mrx-auth-subtitle">Redirecting to your destination...</p>
+            <h2 className="mrx-auth-title" style={{ fontSize: '1.5rem', marginTop: '1rem' }}>تم بنجاح</h2>
+            <p className="mrx-auth-subtitle">هنحولك دلوقتي للصفحة المطلوبة...</p>
           </>
         )}
 
@@ -84,7 +84,7 @@ export default function AuthCallbackPage() {
             <div className="mrx-error-alert" style={{ width: '100%', maxWidth: '350px' }}>
               <AlertIcon />
               <div>
-                <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', color: 'var(--mrx-error)', textAlign: 'left' }}>Authentication Failed</h3>
+                <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', color: 'var(--mrx-error)', textAlign: 'left' }}>فشل تسجيل الدخول</h3>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--mrx-text-primary)', opacity: 0.9, textAlign: 'left' }}>{errorMsg}</p>
               </div>
             </div>
@@ -93,7 +93,7 @@ export default function AuthCallbackPage() {
               style={{ marginTop: '2rem', maxWidth: '350px' }}
               onClick={() => navigate('/login', { replace: true })}
             >
-              Back to Sign In
+              الرجوع لتسجيل الدخول
             </button>
           </div>
         )}

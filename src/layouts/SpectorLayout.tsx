@@ -24,7 +24,7 @@ export default function SpectorLayout() {
         <div className="mobile-header">
           <div className="mobile-logo">
             <Logo className="small" onClick={() => navigate('/spector')} />
-            <span>Spector</span>
+            <span>المراقب</span>
           </div>
           <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
             ☰
@@ -39,7 +39,7 @@ export default function SpectorLayout() {
         <aside className={`spector-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="spector-sidebar-header">
             <Logo onClick={() => navigate('/spector')} />
-            <span>Spector Portal</span>
+            <span>بوابة المراقب</span>
           </div>
           
           <nav className="spector-nav">
@@ -49,7 +49,7 @@ export default function SpectorLayout() {
               onClick={() => setIsMobileMenuOpen(false)}
               className={({ isActive }) => isActive ? 'spector-nav-link active' : 'spector-nav-link'}
             >
-              Dashboard
+              لوحة التحكم
             </NavLink>
             
             <div className="nav-divider" style={{ margin: '1rem 0', borderBottom: '1px solid rgba(169, 139, 98, 0.2)' }}></div>
@@ -59,12 +59,12 @@ export default function SpectorLayout() {
               className="spector-nav-link public-link"
               target="_blank"
             >
-              View Public Site ↗
+              الموقع الرئيسي ↗
             </NavLink>
           </nav>
 
           <button className="spector-logout-btn" onClick={onLogout}>
-            Sign Out
+            تسجيل الخروج
           </button>
         </aside>
 

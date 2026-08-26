@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { getBarberBookings, BarberBookingDTO } from '../../api/barbers.api';
 import { updateBookingStatus, BookingStatus } from '../../api/bookings.api';
 import { useToast } from '../../context/ToastContext';
+import { parseApiError } from '../../utils/errorParser';
+import { formatTime12Hour } from '../../utils/timeFormat';
 import './BarberDashboard.css';
 
 export default function BarberDashboard() {
@@ -27,7 +29,7 @@ export default function BarberDashboard() {
       setBookings(sorted);
     } catch (err: any) {
       console.error('Failed to load bookings', err);
-      setError('Server is currently unreachable. Please try again later.');
+      setError(parseApiError(err, 'السيرفر مش شغال دلوقتي. جرب تاني بعد شوية.'));
     } finally {
       setIsLoading(false);
     }
@@ -60,23 +62,16 @@ export default function BarberDashboard() {
       await updateBookingStatus(bookingId, status);
       
       let label = '';
-      if (status === BookingStatus.Arrived) label = 'Arrived';
-      else if (status === BookingStatus.DidNotArrive) label = 'Did Not Arrive';
-      else if (status === BookingStatus.Confirmed) label = 'Confirmed (Undo)';
+      if (status === BookingStatus.Arrived) label = 'حضر';
+      else if (status === BookingStatus.DidNotArrive) label = 'محضرش';
+      else if (status === BookingStatus.Confirmed) label = 'مؤكد (تراجع)';
       
-      showToast(`Booking #${bookingId} marked as ${label}`, 'success');
+      showToast(`تم تحديث الحجز رقم ${bookingId} لـ ${label}`, 'success');
       // Refresh the agenda
       fetchBookingsForDate(currentDate);
     } catch (err: any) {
       console.error('Update status failed:', err.response?.data || err);
-      
-      const errorMessage = err.response?.data?.message || err.response?.data || '';
-      
-      if (err.code === 'ERR_NETWORK') {
-        showToast('Service is currently unavailable. Please try again later.', 'error');
-      } else {
-        showToast(`Failed to update booking #${bookingId}. ${errorMessage}`, 'error');
-      }
+      showToast(parseApiError(err, `فشل تحديث الحجز رقم ${bookingId}.`), 'error');
     } finally {
       setUpdatingId(null);
     }
@@ -115,30 +110,30 @@ export default function BarberDashboard() {
                       currentDate.getMonth() === yesterday.getMonth() && 
                       currentDate.getFullYear() === yesterday.getFullYear();
 
-  let headerTitle = "Agenda";
-  if (isToday) headerTitle = "Today's Agenda";
-  else if (isTomorrow) headerTitle = "Tomorrow's Agenda";
-  else if (isYesterday) headerTitle = "Yesterday's Agenda";
+  let headerTitle = "جدول المواعيد";
+  if (isToday) headerTitle = "جدول النهاردة";
+  else if (isTomorrow) headerTitle = "جدول بكرة";
+  else if (isYesterday) headerTitle = "جدول امبارح";
 
   return (
     <div className="barber-dashboard">
       <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1>{headerTitle}</h1>
-          <p className="subtitle">{currentDate.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <p className="subtitle">{currentDate.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
         
         <div className="date-navigation" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <button className="btn-secondary" onClick={handlePrevDay} style={{ padding: '0.5rem 1rem' }}>
-            &larr; Prev
+            &rarr; اللي فات
           </button>
           {!isToday && (
             <button className="btn-secondary" onClick={handleToday} style={{ padding: '0.5rem 1rem' }}>
-              Today
+              النهاردة
             </button>
           )}
           <button className="btn-secondary" onClick={handleNextDay} style={{ padding: '0.5rem 1rem' }}>
-            Next &rarr;
+            اللي جاي &larr;
           </button>
         </div>
       </header>
@@ -168,19 +163,19 @@ export default function BarberDashboard() {
               return (
                 <div className="timeline-item" key={booking.id}>
                   <div className="time-col">
-                    <span className="time-start">{booking.startTime.substring(0, 5)}</span>
-                    <span className="time-end">{booking.endTime.substring(0, 5)}</span>
+                    <span className="time-start">{formatTime12Hour(booking.startTime)}</span>
+                    <span className="time-end">{formatTime12Hour(booking.endTime)}</span>
                   </div>
                   <div className="details-col">
                     <div className="customer-info">
                       <h3>{booking.customerName}</h3>
-                      <p className="phone">{booking.customerPhone || 'No phone provided'}</p>
+                      <p className="phone">{booking.customerPhone || 'مفيش رقم متسجل'}</p>
                     </div>
                     <div className="booking-meta">
                       <span className={`status-badge ${getStatusClass(booking.status)}`}>
                         {booking.status}
                       </span>
-                      <span className="price">EGP {booking.totalPrice.toFixed(2)}</span>
+                      <span className="price">ج.م {booking.totalPrice.toFixed(2)}</span>
 
                       {/* ── Quick Status Actions ── */}
                       {canMarkArrived && (
@@ -189,17 +184,17 @@ export default function BarberDashboard() {
                             className="btn-status arrived"
                             disabled={isUpdating}
                             onClick={() => handleStatusChange(booking.id, BookingStatus.Arrived)}
-                            title="Mark as Arrived"
+                            title="سجل كحضور"
                           >
-                            {isUpdating ? '…' : '✔ Arrived'}
+                            {isUpdating ? '…' : '✔ حضر'}
                           </button>
                           <button
                             className="btn-status didnotarrive"
                             disabled={isUpdating}
                             onClick={() => handleStatusChange(booking.id, BookingStatus.DidNotArrive)}
-                            title="Mark as Did Not Arrive"
+                            title="سجل كغياب"
                           >
-                            {isUpdating ? '…' : '✖ No-Show'}
+                            {isUpdating ? '…' : '✖ محضرش'}
                           </button>
                         </div>
                       )}
@@ -212,8 +207,8 @@ export default function BarberDashboard() {
         ) : (
           <div className="empty-state">
             <div className="icon">🏖️</div>
-            <h3>No appointments found.</h3>
-            <p>Enjoy your free time or check your schedule for another day.</p>
+            <h3>مفيش حجوزات في اليوم ده.</h3>
+            <p>استمتع بوقتك أو شوف جدولك في يوم تاني.</p>
           </div>
         )}
       </div>

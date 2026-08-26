@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getBarberById, getBarberAvailability, BarberDTO, AvailabilitySlot } from '../../api/barbers.api';
 import './BarberProfile.css';
 import { useAuth } from '../../context/AuthContext';
+import { formatTime12Hour } from '../../utils/timeFormat';
 
 export default function BarberProfile() {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +29,7 @@ export default function BarberProfile() {
         setBarber(data);
       } catch (err: any) {
         console.error('Failed to load barber profile', err);
-        setError('Barber not found or currently unavailable.');
+        setError('الحلاق مش موجود أو غير متاح حالياً.');
       } finally {
         setIsLoadingBarber(false);
       }
@@ -47,7 +48,7 @@ export default function BarberProfile() {
         setSlots(data);
       } catch (err: any) {
         console.error('Failed to load availability', err);
-        setSlotsError('Unable to load availability for this date.');
+        setSlotsError('مش قادرين نحمل المواعيد لليوم ده.');
         setSlots([]);
       } finally {
         setIsLoadingSlots(false);
@@ -92,7 +93,7 @@ export default function BarberProfile() {
     return (
       <div className="barber-profile-container error">
         <h2>{error}</h2>
-        <button className="btn-secondary" onClick={() => navigate('/barbers')}>Back to Barbers</button>
+        <button className="btn-secondary" onClick={() => navigate('/barbers')}>الرجوع للحلاقين</button>
       </div>
     );
   }
@@ -120,28 +121,28 @@ export default function BarberProfile() {
              )}
           </div>
           
-          <span className="immersive-eyebrow">THE CRAFTSMAN</span>
+          <span className="immersive-eyebrow">الحلاق</span>
           <h1 className="immersive-name">{barber.fullName.toUpperCase()}</h1>
           
           <div className="immersive-status-block">
             <div className={`status-indicator ${barber.acceptingBookings ? 'active' : 'inactive'}`}></div>
             <span className="status-text">
-              {barber.acceptingBookings ? 'Accepting Appointments' : 'Fully Booked'}
+              {barber.acceptingBookings ? 'متاح للحجز' : 'مفيش مواعيد'}
             </span>
           </div>
           
-          <p className="immersive-duration">Standard Session: {barber.bookingDurationMinutes} Minutes</p>
+          <p className="immersive-duration">مدة الجلسة: {barber.bookingDurationMinutes} دقيقة</p>
           
           <div className="immersive-quote">
-            "Precision is not just a skill, it is a lifestyle."
+            "الحلاقة مش مجرد شغل، دي فن ومزاج."
           </div>
         </div>
 
         {/* Right Side: Glass Booking Card */}
         <div className="immersive-booking-side">
           <div className="glass-booking-card">
-            <h2 className="glass-title">RESERVE YOUR CHAIR</h2>
-            <p className="glass-subtitle">Select your preferred date and time.</p>
+            <h2 className="glass-title">احجز كرسيك</h2>
+            <p className="glass-subtitle">اختار اليوم والوقت اللي يريحك.</p>
 
             <div className="glass-date-picker">
               <input 
@@ -157,7 +158,7 @@ export default function BarberProfile() {
             <div className="glass-slots-container">
               {!barber.acceptingBookings ? (
                 <div className="glass-message warning">
-                  Currently unavailable for new bookings.
+                  غير متاح لحجوزات جديدة دلوقتي.
                 </div>
               ) : isLoadingSlots ? (
                 <div className="glass-slots-grid">
@@ -177,14 +178,14 @@ export default function BarberProfile() {
                         className={`glass-slot ${isSelected ? 'selected' : ''}`}
                         onClick={() => setSelectedSlot(slot)}
                       >
-                        {slot.startTime}
+                        {formatTime12Hour(slot.startTime)}
                       </button>
                     );
                   })}
                 </div>
               ) : (
                 <div className="glass-message">
-                  No slots available on this date.
+                  مفيش مواعيد فاضية في اليوم ده.
                 </div>
               )}
             </div>
@@ -192,12 +193,12 @@ export default function BarberProfile() {
             {selectedSlot && barber.acceptingBookings && (
               <div className="glass-action-area">
                 <div className="glass-summary">
-                  <span>{new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                  <span>{new Date(selectedDate).toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' })}</span>
                   <span className="dot-separator">•</span>
-                  <span className="highlight-time">{selectedSlot.startTime}</span>
+                  <span className="highlight-time">{formatTime12Hour(selectedSlot.startTime)}</span>
                 </div>
                 <button className="btn-glass-confirm" onClick={handleBookSlot}>
-                  CONFIRM &rarr;
+                  &larr; تأكيد الحجز
                 </button>
               </div>
             )}

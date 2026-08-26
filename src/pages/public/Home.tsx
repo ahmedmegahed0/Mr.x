@@ -35,6 +35,15 @@ export default function Home() {
   const [isLoadingBarbers, setIsLoadingBarbers] = useState(true);
   const [isLoadingServices, setIsLoadingServices] = useState(true);
   const [activeCard, setActiveCard] = useState(0);
+  
+  // Marquee state
+  const marqueeRef = useState<HTMLDivElement | null>(null);
+  const realMarqueeRef = (el: HTMLDivElement | null) => {
+    marqueeRef[1](el);
+  };
+  const [isMarqueePaused, setIsMarqueePaused] = useState(false);
+  const resumeTimeoutRef = useState<ReturnType<typeof setInterval> | null>(null);
+
   const stageRef = (el: HTMLDivElement | null) => {
     if (!el) return;
     const handler = () => {
@@ -72,6 +81,37 @@ export default function Home() {
     fetchServices();
   }, []);
 
+  // Marquee auto-scroll logic
+  useEffect(() => {
+    let animationId: number;
+    const scroll = () => {
+      const el = marqueeRef[0];
+      if (!isMarqueePaused && el && services.length > 0) {
+        el.scrollLeft += 1;
+        // Infinite loop handling
+        if (el.scrollLeft >= el.scrollWidth / 2) {
+          el.scrollLeft -= el.scrollWidth / 2;
+        }
+      }
+      animationId = requestAnimationFrame(scroll);
+    };
+    animationId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationId);
+  }, [isMarqueePaused, services, marqueeRef[0]]);
+
+  const pauseMarquee = () => {
+    setIsMarqueePaused(true);
+    if (resumeTimeoutRef[0]) clearTimeout(resumeTimeoutRef[0]);
+  };
+
+  const resumeMarquee = () => {
+    const timeout = setTimeout(() => {
+      setIsMarqueePaused(false);
+    }, 1500); // 1.5s wait for momentum to finish
+    resumeTimeoutRef[1](timeout);
+  };
+
+
   return (
     <div className="home-page">
 
@@ -80,8 +120,8 @@ export default function Home() {
 
         {/* — Centered Top Header — */}
         <div className="hero-top">
-          <span className="hero-eyebrow">EST. 2026 &bull; MASTER GROOMING</span>
-          <h1 className="hero-headline">SELECT YOUR<br />CRAFTSMAN</h1>
+          <span className="hero-eyebrow">تأسس 2026 &bull; حلاقة على أصولها</span>
+          <h1 className="hero-headline">اختار<br />حلاقك</h1>
         </div>
 
         {/* — Barber Panels — */}
@@ -123,10 +163,10 @@ export default function Home() {
                       <div className="barber-card-content">
                         <div className="barber-status">
                           <span className="status-dot"></span>
-                          <span>Available Today</span>
+                          <span>متاح النهاردة</span>
                         </div>
                         <h3 className="barber-name">{barber.fullName}</h3>
-                        <p className="barber-role">Master Barber</p>
+                        <p className="barber-role">حلاق محترف</p>
                         <button
                           className="btn-book-card"
                           onClick={(e) => {
@@ -134,7 +174,7 @@ export default function Home() {
                             navigate(`/barbers/${barber.id}`);
                           }}
                         >
-                          BOOK NOW &rarr;
+                          &larr; احجز دلوقتي
                         </button>
                       </div>
                     </div>
@@ -237,7 +277,7 @@ export default function Home() {
         {/* — Bottom CTA only — */}
         <div className="hero-bottom">
           <button className="btn-browse-all" onClick={() => navigate('/barbers')}>
-            BROWSE ALL BARBERS
+            شوف كل الحلاقين
           </button>
         </div>
 
@@ -248,13 +288,13 @@ export default function Home() {
         <div className="rituals-content">
           <div className="rituals-header editorial-header">
             <h2 className="section-title">
-              <span className="title-muted">THE RITUALS</span>
-              <span className="title-highlight">Signature Services</span>
+              <span className="title-muted">خدماتنا</span>
+              <span className="title-highlight">الخدمات المميزة</span>
             </h2>
           </div>
           <div className="rituals-menu">
             {isLoadingServices ? (
-              <div className="loading-dots">Loading services...</div>
+              <div className="loading-dots">بيحمل الخدمات...</div>
             ) : (
               <>
                 {/* Desktop list */}
@@ -275,7 +315,16 @@ export default function Home() {
 
                 {/* Mobile card grid */}
                 {/* Mobile infinite-loop marquee */}
-                <div className="menu-cards-marquee">
+                <div 
+                  className="menu-cards-marquee"
+                  ref={realMarqueeRef}
+                  onTouchStart={pauseMarquee}
+                  onTouchEnd={resumeMarquee}
+                  onMouseEnter={pauseMarquee}
+                  onMouseLeave={resumeMarquee}
+                  onMouseDown={pauseMarquee}
+                  onMouseUp={resumeMarquee}
+                >
                   <div className="menu-cards-track">
                     {/* original set */}
                     {services.map(service => (
@@ -309,9 +358,9 @@ export default function Home() {
       {/* ====== CTA BANNER ====== */}
       <section className="mrx-cta" id="about">
         <div className="cta-content">
-          <h2 className="cta-heading">YOUR CHAIR IS WAITING.</h2>
+          <h2 className="cta-heading">كرسيك مستنيك.</h2>
           <button className="btn-primary-pill cta-btn-large" onClick={() => navigate('/barbers')}>
-            BOOK AN APPOINTMENT
+            احجز ميعادك دلوقتي
           </button>
         </div>
       </section>

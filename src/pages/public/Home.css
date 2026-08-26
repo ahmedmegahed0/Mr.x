@@ -14,8 +14,8 @@
   --mrx-light-text:   #181512;
   --mrx-light-muted:  #4A443F;
 
-  --font-serif: var(--font-heading, 'Playfair Display', serif);
-  --font-sans:  var(--font-body, 'Inter', sans-serif);
+  --font-serif: var(--font-heading, 'Cairo', 'Playfair Display', serif);
+  --font-sans:  var(--font-body, 'Tajawal', 'Inter', sans-serif);
 }
 
 .home-page {
@@ -622,30 +622,22 @@
 /* ── Infinite Marquee ── */
 .menu-cards-marquee {
   display: none;         /* shown only on mobile via media query */
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   width: 100%;
   position: relative;
   /* fade edges */
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
   mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
+.menu-cards-marquee::-webkit-scrollbar { display: none; }
 
 .menu-cards-track {
   display: flex;
   gap: 12px;
   width: max-content;
-  animation: marquee-scroll 18s linear infinite;
-}
-
-@media (hover: hover) {
-  .menu-cards-track:hover {
-    animation-play-state: paused;
-  }
-}
-
-@keyframes marquee-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
 }
 
 

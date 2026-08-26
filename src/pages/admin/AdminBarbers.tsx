@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getAdminBarbers, createBarber, deleteBarber, AdminBarberDTO, CreateBarberRequest } from '../../api/admin.api';
 import AdminModal from '../../components/admin/AdminModal';
 import { useToast } from '../../context/ToastContext';
+import { parseApiError } from '../../utils/errorParser';
 import './AdminBarbers.css';
 
 export default function AdminBarbers() {
@@ -36,7 +37,7 @@ export default function AdminBarbers() {
     } catch (error) {
       console.error('Failed to fetch barbers:', error);
       setBarbers([]);
-      setFetchError('Server is currently unreachable. Please try again later.');
+      setFetchError('السيرفر مش شغال دلوقتي. جرب تاني بعد شوية.');
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +60,7 @@ export default function AdminBarbers() {
     setIsSubmitting(true);
     try {
       await createBarber(formData);
-      showToast('Barber added successfully', 'success');
+      showToast('تم إضافة الحلاق بنجاح', 'success');
       setIsModalOpen(false);
       setFormData({
         fullName: '',
@@ -70,42 +71,20 @@ export default function AdminBarbers() {
       });
       fetchBarbers();
     } catch (error: any) {
-      if (error.code === 'ERR_NETWORK') {
-        showToast('Service is currently unavailable. Please try again later.', 'error');
-      } else {
-        showToast('Failed to create barber. Please try again.', 'error');
-      }
+      showToast(parseApiError(error, 'فشل إضافة الحلاق. جرب تاني.'), 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to delete/deactivate ${name}?`)) {
+    if (window.confirm(`متأكد إنك عايز تمسح/تعطل حساب ${name}؟`)) {
       try {
         await deleteBarber(id);
-        showToast('Barber deleted successfully', 'success');
+        showToast('تم مسح الحلاق بنجاح', 'success');
         fetchBarbers();
       } catch (error: any) {
-        if (error.code === 'ERR_NETWORK') {
-          showToast('Service is currently unavailable. Please try again later.', 'error');
-        } else {
-          const resData = error.response?.data;
-          let errMsg = 'Failed to delete barber.';
-          if (typeof resData === 'string' && resData.trim() !== '') {
-             errMsg = resData;
-          } else if (resData?.message) {
-             errMsg = resData.message;
-          } else if (resData?.detail) {
-             errMsg = resData.detail;
-          } else if (resData?.title) {
-             errMsg = resData.title;
-          }
-          if (error.response?.status === 500) {
-             errMsg += ' (Usually means this barber has existing bookings and cannot be hard-deleted. Try deactivating them instead.)';
-          }
-          showToast(errMsg, 'error');
-        }
+        showToast(parseApiError(error, 'فشل مسح الحلاق.'), 'error');
       }
     }
   };
@@ -113,8 +92,8 @@ export default function AdminBarbers() {
   return (
     <div className="admin-barbers">
       <header className="admin-page-header">
-        <h1>Barbers Management</h1>
-        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>Add Barber</button>
+        <h1>إدارة الحلاقين</h1>
+        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>إضافة حلاق</button>
       </header>
 
       <div className="admin-barbers-grid">
@@ -134,21 +113,21 @@ export default function AdminBarbers() {
                   <p>{barber.email}</p>
                 </div>
                 <span className={`status-badge ${barber.acceptingBookings ? 'active' : 'expired'}`}>
-                  {barber.acceptingBookings ? 'Active' : 'Not Accepting'}
+                  {barber.acceptingBookings ? 'نشط' : 'مش بيستقبل'}
                 </span>
               </div>
               
               <div className="barber-card-body">
                 <div className="barber-stat">
-                  <span className="barber-stat-label">Phone</span>
+                  <span className="barber-stat-label">التليفون</span>
                   <span className="barber-stat-value">{barber.phoneNumber || '-'}</span>
                 </div>
                 <div className="barber-stat">
-                  <span className="barber-stat-label">Slot Duration</span>
-                  <span className="barber-stat-value">{barber.bookingDurationMinutes} mins</span>
+                  <span className="barber-stat-label">مدة الحجز</span>
+                  <span className="barber-stat-value">{barber.bookingDurationMinutes} دقايق</span>
                 </div>
                 <div className="barber-stat">
-                  <span className="barber-stat-label">Joined</span>
+                  <span className="barber-stat-label">تاريخ الانضمام</span>
                   <span className="barber-stat-value">{new Date(barber.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
@@ -158,22 +137,22 @@ export default function AdminBarbers() {
                   className="btn-action btn-delete" 
                   onClick={() => handleDelete(barber.id, barber.fullName)}
                 >
-                  Delete
+                  مسح
                 </button>
               </div>
             </div>
           ))
         ) : (
           <div style={{ color: '#8C867E', gridColumn: '1 / -1', padding: '3rem', textAlign: 'center' }}>
-            No barbers found.
+            مفيش حلاقين.
           </div>
         )}
       </div>
 
-      <AdminModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add New Barber">
+      <AdminModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="إضافة حلاق جديد">
         <form onSubmit={handleSubmit}>
           <div className="admin-form-group">
-            <label>Full Name</label>
+            <label>الاسم بالكامل</label>
             <input 
               type="text" 
               name="fullName" 
@@ -184,7 +163,7 @@ export default function AdminBarbers() {
           </div>
 
           <div className="admin-form-group">
-            <label>Email Address</label>
+            <label>الإيميل</label>
             <input 
               type="email" 
               name="email" 
@@ -195,7 +174,7 @@ export default function AdminBarbers() {
           </div>
 
           <div className="admin-form-group">
-            <label>Phone Number (Optional)</label>
+            <label>التليفون (اختياري)</label>
             <input 
               type="tel" 
               name="phoneNumber" 
@@ -205,7 +184,7 @@ export default function AdminBarbers() {
           </div>
 
           <div className="admin-form-group">
-            <label>Booking Duration (Minutes)</label>
+            <label>مدة الحجز (بالدقايق)</label>
             <input 
               type="number" 
               name="bookingDurationMinutes" 
@@ -225,14 +204,14 @@ export default function AdminBarbers() {
               onChange={handleInputChange} 
             />
             <label htmlFor="acceptingBookings" className="admin-checkbox-label">
-              Accepting Bookings
+              استقبال حجوزات
             </label>
           </div>
 
           <div className="admin-modal-actions">
-            <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Cancel</button>
+            <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>إلغاء</button>
             <button type="submit" className="btn-primary" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving...' : 'Add Barber'}
+              {isSubmitting ? 'جاري الحفظ...' : 'إضافة الحلاق'}
             </button>
           </div>
         </form>

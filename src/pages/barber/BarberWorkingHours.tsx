@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { getBarberProfile, updateWorkingHours, WorkingHour } from '../../api/barbers.api';
 import { useToast } from '../../context/ToastContext';
+import { parseApiError } from '../../utils/errorParser';
 import './BarberWorkingHours.css';
 
 const DAYS_OF_WEEK = [
-  'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+  'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'
 ];
 
 export default function BarberWorkingHours() {
@@ -31,11 +32,7 @@ export default function BarberWorkingHours() {
         
         setWorkingHours(initializedHours);
       } catch (err: any) {
-        if (err.code === 'ERR_NETWORK') {
-          showToast('Server is currently offline. Cannot load working hours.', 'error');
-        } else {
-          showToast('Failed to load working hours', 'error');
-        }
+        showToast(parseApiError(err, 'مش قادرين نحمل مواعيد العمل'), 'error');
       } finally {
         setIsLoading(false);
       }
@@ -68,7 +65,7 @@ export default function BarberWorkingHours() {
     });
 
     if (hasError) {
-      showToast('Opening time must be before closing time.', 'error');
+      showToast('وقت الفتح لازم يكون قبل وقت القفل.', 'error');
       setIsSaving(false);
       return;
     }
@@ -83,39 +80,24 @@ export default function BarberWorkingHours() {
       }));
 
       await updateWorkingHours({ workingHours: payload });
-      showToast('Working hours saved successfully', 'success');
+      showToast('تم حفظ مواعيد العمل بنجاح', 'success');
     } catch (err: any) {
       console.error('Save working hours error:', err);
-      if (err.code === 'ERR_NETWORK') {
-        showToast('Service is currently unavailable. Please try again later.', 'error');
-      } else {
-        const resData = err.response?.data;
-        let errMsg = 'Failed to save working hours';
-        if (typeof resData === 'string' && resData) errMsg = resData;
-        else if (resData?.message) errMsg = resData.message;
-        else if (resData?.title) {
-          errMsg = resData.title;
-          if (resData.errors) {
-            const firstErr = Object.values(resData.errors)[0] as string[];
-            if (firstErr && firstErr.length > 0) errMsg += ': ' + firstErr[0];
-          }
-        }
-        showToast(errMsg, 'error');
-      }
+      showToast(parseApiError(err, 'فشل حفظ مواعيد العمل'), 'error');
     } finally {
       setIsSaving(false);
     }
   };
 
   if (isLoading) {
-    return <div className="working-hours skeleton">Loading working hours...</div>;
+    return <div className="working-hours skeleton">جاري تحميل مواعيد العمل...</div>;
   }
 
   return (
     <div className="working-hours">
       <header className="page-header">
-        <h1>Working Hours</h1>
-        <p className="subtitle">Set your weekly availability schedule.</p>
+        <h1>مواعيد العمل</h1>
+        <p className="subtitle">حدد أوقات دوامك خلال الأسبوع.</p>
       </header>
 
       <form className="hours-container" onSubmit={handleSave}>
@@ -135,7 +117,7 @@ export default function BarberWorkingHours() {
 
             <div className="time-inputs">
               {wh.isClosed ? (
-                <div className="closed-label">Day Off</div>
+                <div className="closed-label">يوم إجازة</div>
               ) : (
                 <>
                   <input 
@@ -144,7 +126,7 @@ export default function BarberWorkingHours() {
                     onChange={(e) => handleTimeChange(wh.dayOfWeek, 'openingTime', e.target.value)}
                     required
                   />
-                  <span className="separator">to</span>
+                  <span className="separator">إلى</span>
                   <input 
                     type="time" 
                     value={wh.closingTime.substring(0, 5)} 
@@ -159,7 +141,7 @@ export default function BarberWorkingHours() {
 
         <div className="form-actions">
           <button type="submit" className="btn-primary" disabled={isSaving}>
-            {isSaving ? 'Saving...' : 'Save Schedule'}
+            {isSaving ? 'جاري الحفظ...' : 'حفظ المواعيد'}
           </button>
         </div>
       </form>

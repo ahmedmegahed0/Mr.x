@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap');
 
 body, html {
   margin: 0;
@@ -6,7 +6,7 @@ body, html {
   min-height: 100vh;
   background-color: #0B0A09;
   color: #EDE7DC;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Tajawal', 'Inter', sans-serif;
   overflow-x: hidden;
   scroll-behavior: smooth; /* Smooth scrolling for anchor links */
   -webkit-text-size-adjust: 100%;

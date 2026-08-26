@@ -3,6 +3,7 @@ import { getBarberProfile, updateBookingSettings, BarberDTO } from '../../api/ba
 import { uploadProfilePicture, deleteProfilePicture } from '../../api/auth.api';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
+import { parseApiError } from '../../utils/errorParser';
 import './BarberSettings.css';
 
 export default function BarberSettings() {
@@ -29,11 +30,7 @@ export default function BarberSettings() {
         setBookingDurationMinutes(data.bookingDurationMinutes);
         setAcceptingBookings(data.acceptingBookings);
       } catch (err: any) {
-        if (err.code === 'ERR_NETWORK') {
-          showToast('Server is currently offline. Cannot load settings.', 'error');
-        } else {
-          showToast('Failed to load profile', 'error');
-        }
+        showToast(parseApiError(err, 'مش قادرين نحمل البيانات'), 'error');
       } finally {
         setIsLoading(false);
       }
@@ -49,18 +46,14 @@ export default function BarberSettings() {
         bookingDurationMinutes,
         acceptingBookings
       });
-      showToast('Settings saved successfully', 'success');
+      showToast('تم حفظ الإعدادات بنجاح', 'success');
       
       // Update local profile state
       if (profile) {
         setProfile({ ...profile, bookingDurationMinutes, acceptingBookings });
       }
     } catch (err: any) {
-      if (err.code === 'ERR_NETWORK') {
-        showToast('Service is currently unavailable. Please try again later.', 'error');
-      } else {
-        showToast('Failed to save settings', 'error');
-      }
+      showToast(parseApiError(err, 'فشل حفظ الإعدادات'), 'error');
     } finally {
       setIsSaving(false);
     }
@@ -73,7 +66,7 @@ export default function BarberSettings() {
     setIsUploadingPicture(true);
     try {
       await uploadProfilePicture(file);
-      showToast('Profile picture updated successfully', 'success');
+      showToast('تم تحديث الصورة بنجاح', 'success');
       // Reload profile to get the new image URL
       const data = await getBarberProfile();
       // Add a cache buster so the browser fetches the new image instead of using cache
@@ -84,7 +77,7 @@ export default function BarberSettings() {
       }
       setProfile(data);
     } catch (err: any) {
-      showToast('Failed to upload picture', 'error');
+      showToast(parseApiError(err, 'فشل رفع الصورة'), 'error');
     } finally {
       setIsUploadingPicture(false);
       if (fileInputRef.current) {
@@ -94,34 +87,34 @@ export default function BarberSettings() {
   };
 
   const handleDeletePicture = async () => {
-    if (!window.confirm('Are you sure you want to remove your profile picture?')) return;
+    if (!window.confirm('متأكد إنك عايز تمسح صورتك؟')) return;
     setIsUploadingPicture(true);
     try {
       await deleteProfilePicture();
-      showToast('Profile picture removed', 'success');
+      showToast('تم مسح الصورة', 'success');
       if (profile) setProfile({ ...profile, profilePictureUrl: '' });
     } catch (err: any) {
-      showToast('Failed to remove picture', 'error');
+      showToast(parseApiError(err, 'فشل مسح الصورة'), 'error');
     } finally {
       setIsUploadingPicture(false);
     }
   };
 
   if (isLoading) {
-    return <div className="barber-settings skeleton">Loading settings...</div>;
+    return <div className="barber-settings skeleton">جاري تحميل الإعدادات...</div>;
   }
 
   return (
     <div className="barber-settings">
       <header className="page-header">
-        <h1>Settings</h1>
-        <p className="subtitle">Manage your profile, availability, and preferences.</p>
+        <h1>الإعدادات</h1>
+        <p className="subtitle">عدل بياناتك، ومواعيدك، وإعدادات حسابك.</p>
       </header>
 
       {/* ── PROFILE PICTURE PANEL ── */}
       <div className="settings-card">
-        <h2>Profile Picture</h2>
-        <p className="help-text" style={{ marginBottom: '1.5rem' }}>This picture will be shown to customers on the booking page.</p>
+        <h2>صورة البروفايل</h2>
+        <p className="help-text" style={{ marginBottom: '1.5rem' }}>الصورة دي هتظهر للعملاء في صفحة الحجز.</p>
         
         <div className="profile-picture-section">
           <div className="profile-picture-preview">
@@ -149,7 +142,7 @@ export default function BarberSettings() {
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploadingPicture}
             >
-              {isUploadingPicture ? 'Uploading...' : 'Upload New Picture'}
+              {isUploadingPicture ? 'جاري الرفع...' : 'ارفع صورة جديدة'}
             </button>
             
             {profile?.profilePictureUrl && (
@@ -159,7 +152,7 @@ export default function BarberSettings() {
                 disabled={isUploadingPicture}
                 style={{ marginLeft: '1rem', background: 'transparent', border: 'none', color: '#e74c3c', cursor: 'pointer', fontWeight: 600 }}
               >
-                Remove Picture
+                امسح الصورة
               </button>
             )}
           </div>
@@ -168,30 +161,30 @@ export default function BarberSettings() {
 
       {/* ── BOOKING SETTINGS PANEL ── */}
       <div className="settings-card" style={{ marginTop: '2rem' }}>
-        <h2>Booking Settings</h2>
+        <h2>إعدادات الحجز</h2>
         <form onSubmit={handleSave} style={{ marginTop: '1.5rem' }}>
           <div className="form-group">
-            <label htmlFor="duration">Slot Duration (Minutes)</label>
-            <p className="help-text">How long does an average appointment take?</p>
+            <label htmlFor="duration">مدة الحجز (بالدقايق)</label>
+            <p className="help-text">الحلاقة في المتوسط بتاخد وقت قد إيه؟</p>
             <select 
               id="duration"
               value={bookingDurationMinutes}
               onChange={(e) => setBookingDurationMinutes(Number(e.target.value))}
               disabled={isSaving}
             >
-              <option value={15}>15 Minutes</option>
-              <option value={30}>30 Minutes</option>
-              <option value={45}>45 Minutes</option>
-              <option value={60}>60 Minutes (1 Hour)</option>
-              <option value={90}>90 Minutes (1.5 Hours)</option>
-              <option value={120}>120 Minutes (2 Hours)</option>
+              <option value={15}>15 دقيقة</option>
+              <option value={30}>30 دقيقة</option>
+              <option value={45}>45 دقيقة</option>
+              <option value={60}>60 دقيقة (ساعة)</option>
+              <option value={90}>90 دقيقة (ساعة ونص)</option>
+              <option value={120}>120 دقيقة (ساعتين)</option>
             </select>
           </div>
 
           <div className="form-group toggle-group">
             <div>
-              <label htmlFor="accepting">Accepting Bookings</label>
-              <p className="help-text">Turn this off if you are on vacation or unavailable.</p>
+              <label htmlFor="accepting">استقبال حجوزات</label>
+              <p className="help-text">اقفلها لو كنت في إجازة أو مش متاح.</p>
             </div>
             <label className="switch">
               <input 
@@ -211,7 +204,7 @@ export default function BarberSettings() {
               className="btn-primary"
               disabled={isSaving || (profile?.bookingDurationMinutes === bookingDurationMinutes && profile?.acceptingBookings === acceptingBookings)}
             >
-              {isSaving ? 'Saving...' : 'Save Settings'}
+              {isSaving ? 'جاري الحفظ...' : 'حفظ الإعدادات'}
             </button>
           </div>
         </form>

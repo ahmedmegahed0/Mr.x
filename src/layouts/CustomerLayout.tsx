@@ -18,12 +18,12 @@ export default function CustomerLayout() {
           <ul>
             <li>
               <NavLink to="/barbers" className={({ isActive }) => isActive ? 'active' : ''}>
-                Book a Barber
+                احجز حلاق
               </NavLink>
             </li>
             <li>
               <NavLink to="/bookings" className={({ isActive }) => isActive ? 'active' : ''}>
-                My Bookings
+                مواعيدي
               </NavLink>
             </li>
             
@@ -34,7 +34,7 @@ export default function CustomerLayout() {
                 target="_blank"
                 style={{ color: '#d4af37', textDecoration: 'none', display: 'flex', alignItems: 'center' }}
               >
-                View Public Site ↗
+                الموقع الرئيسي ↗
               </NavLink>
             </li>
           </ul>
@@ -42,10 +42,10 @@ export default function CustomerLayout() {
         
         <div className="sidebar-footer">
           <div className="user-info">
-            <span className="user-email">Customer</span>
+            <span className="user-email">عميل</span>
           </div>
           <button className="btn-logout" onClick={handleLogout}>
-            Sign Out
+            تسجيل الخروج
           </button>
         </div>
       </aside>

@@ -67,7 +67,7 @@
 
 .barbers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 3rem;
   animation: fadeInUp 0.8s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -76,6 +76,7 @@
 .barber-card {
   position: relative;
   width: 100%;
+  min-height: 450px; /* Fallback for browsers failing aspect-ratio */
   aspect-ratio: 3 / 4;
   border-radius: 18px;
   overflow: hidden;
@@ -84,6 +85,8 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.2, 1, 0.3, 1), border-color 0.4s ease;
   background: #111;
+  display: flex;
+  flex-direction: column;
 }
 
 .barber-card:hover {
@@ -303,8 +306,21 @@
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
-  .directory-hero { padding: 120px 1.5rem 60px; }
+  .directory-hero { padding: 80px 1rem 40px; }
   .hero-content h1 { font-size: 2.5rem; }
+  
+  .directory-container {
+    padding: 0 1rem 4rem;
+  }
+
+  .barbers-grid {
+    grid-template-columns: 1fr; /* Force 1 column on mobile to prevent overflow */
+    gap: 2rem;
+  }
+
+  .barber-card {
+    min-height: 400px; /* Slightly smaller on very small screens */
+  }
   
   .btn-book {
     opacity: 1; /* Always show button on mobile */
