@@ -172,8 +172,18 @@ export default function PublicLayout() {
       </main>
 
       <footer className="public-footer">
-        <div className="footer-content">
-          <p>&copy; {new Date().getFullYear()} MR. X BARBER. جميع الحقوق محفوظة.</p>
+        <div className="footer-bottom">
+          <p className="copyright">&copy; {new Date().getFullYear()} MR. X BARBER. جميع الحقوق محفوظة.</p>
+          <div className="developer-credits">
+            <p>
+              تم تصميم وتطوير النظام بواسطة <span className="duodev-logo">DuoDev</span>
+            </p>
+            <p className="developer-contact">
+              لو عايز سيستم لشغلك تواصل معانا على: 
+              <br className="mobile-break" />
+              <a href="tel:01067688524" dir="ltr">01067688524</a> - <a href="tel:01019806684" dir="ltr">01019806684</a>
+            </p>
+          </div>
         </div>
       </footer>
     </div>
