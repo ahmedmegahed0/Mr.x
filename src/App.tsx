@@ -33,6 +33,8 @@ import BookingWizard from './pages/public/BookingWizard';
 // Public Imports
 import Home from './pages/public/Home';
 import About from './pages/public/About';
+import PrivacyPolicy from './pages/public/PrivacyPolicy';
+import TermsOfUse from './pages/public/TermsOfUse';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -88,6 +90,8 @@ export default function App() {
       <Route element={<PublicLayout />}>
         <Route index element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfUse />} />
         <Route path="/barbers" element={<BarberDirectory />} />
         <Route path="/barbers/:id" element={<BarberProfile />} />
         <Route path="/barbers/:id/book" element={<BookingWizard />} />

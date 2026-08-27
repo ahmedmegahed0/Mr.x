@@ -173,6 +173,11 @@ export default function PublicLayout() {
 
       <footer className="public-footer">
         <div className="footer-bottom">
+          <div className="footer-legal-links">
+            <a href="/privacy" onClick={(e) => { e.preventDefault(); navigate('/privacy'); }}>سياسة الخصوصية</a>
+            <span className="footer-link-sep">•</span>
+            <a href="/terms" onClick={(e) => { e.preventDefault(); navigate('/terms'); }}>شروط الاستخدام</a>
+          </div>
           <p className="copyright">&copy; {new Date().getFullYear()} MR. X BARBER. جميع الحقوق محفوظة.</p>
           <div className="developer-credits">
             <p>

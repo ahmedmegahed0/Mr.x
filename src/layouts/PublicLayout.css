@@ -367,6 +367,33 @@
   gap: 1.5rem;
 }
 
+.footer-legal-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-legal-links a {
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  font-family: var(--font-sans, 'Tajawal', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: color 0.3s ease;
+}
+
+.footer-legal-links a:hover {
+  color: #C9A96E;
+}
+
+.footer-link-sep {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.7rem;
+}
+
 .copyright {
   margin: 0;
   color: #8C867E;
