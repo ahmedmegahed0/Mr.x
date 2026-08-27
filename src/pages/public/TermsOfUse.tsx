@@ -1,6 +1,17 @@
+import { useEffect } from 'react';
 import './LegalPages.css';
 
 export default function TermsOfUse() {
+  useEffect(() => {
+    const meta = document.createElement('meta');
+    meta.name = 'google-site-verification';
+    meta.content = 'uR-ZMdQQbDtHJT5b8E7htcsBCeECmZMNfrGoBP6wRHU';
+    document.head.appendChild(meta);
+    return () => {
+      document.head.removeChild(meta);
+    };
+  }, []);
+
   return (
     <div className="legal-page">
       {/* Background */}
