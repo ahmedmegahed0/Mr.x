@@ -107,25 +107,25 @@ export default function SpectorDashboard() {
   return (
     <div className="spector-dashboard">
       <header className="spector-page-header">
-        <h1>Dashboard Overview</h1>
+        <h1>نظرة عامة</h1>
       </header>
 
       {/* Metrics Row */}
       <div className="dashboard-metrics">
         <div className="metric-card">
-          <span className="metric-title">Total Revenue</span>
+          <span className="metric-title">إجمالي الإيرادات</span>
           {isLoading ? <div className="skeleton skeleton-title"></div> : <h3 className="metric-value">${stats?.totalRevenue?.toLocaleString() ?? '0'}</h3>}
         </div>
         <div className="metric-card">
-          <span className="metric-title">Total Bookings</span>
+          <span className="metric-title">إجمالي الحجوزات</span>
           {isLoading ? <div className="skeleton skeleton-title"></div> : <h3 className="metric-value">{stats?.totalBookings?.toLocaleString() ?? '0'}</h3>}
         </div>
         <div className="metric-card">
-          <span className="metric-title">Total Customers</span>
+          <span className="metric-title">إجمالي العملاء</span>
           {isLoading ? <div className="skeleton skeleton-title"></div> : <h3 className="metric-value">{stats?.totalCustomers?.toLocaleString() ?? '0'}</h3>}
         </div>
         <div className="metric-card">
-          <span className="metric-title">Total Barbers</span>
+          <span className="metric-title">إجمالي الحلاقين</span>
           {isLoading ? <div className="skeleton skeleton-title"></div> : <h3 className="metric-value">{stats?.totalBarbers?.toLocaleString() ?? '0'}</h3>}
         </div>
       </div>
@@ -134,12 +134,12 @@ export default function SpectorDashboard() {
         {/* Main Chart Area */}
         <div className="dashboard-panel">
           <div className="panel-header">
-            <h2 className="panel-title">Revenue Performance</h2>
+            <h2 className="panel-title">أداء الإيرادات</h2>
             <div className="panel-actions">
               <select value={period} onChange={(e) => setPeriod(e.target.value as any)}>
-                <option value="ThisMonth">This Month</option>
-                <option value="PreviousMonth">Previous Month</option>
-                <option value="ThisYear">This Year</option>
+                <option value="ThisMonth">هذا الشهر</option>
+                <option value="PreviousMonth">الشهر السابق</option>
+                <option value="ThisYear">هذا العام</option>
               </select>
             </div>
           </div>
@@ -149,13 +149,13 @@ export default function SpectorDashboard() {
           ) : (
             <div className="bar-chart-container">
               {monthlyData.length === 0 ? (
-                <div style={{ margin: 'auto', color: '#6F6962' }}>No data available for this period.</div>
+                <div style={{ margin: 'auto', color: '#6F6962' }}>لا توجد بيانات متاحة لهذه الفترة.</div>
               ) : (
                 monthlyData.map((data, idx) => {
                   const heightPercent = (data.totalRevenue / maxRevenue) * 100;
                   return (
                     <div className="bar-wrapper" key={idx}>
-                      <div className="bar" style={{ height: `${heightPercent}%` }} title={`Revenue: $${data.totalRevenue}`}></div>
+                      <div className="bar" style={{ height: `${heightPercent}%` }} title={`الإيرادات: $${data.totalRevenue}`}></div>
                       <span className="bar-label">{data.month}</span>
                     </div>
                   );
@@ -171,7 +171,7 @@ export default function SpectorDashboard() {
           {/* Top Barbers */}
           <div className="dashboard-panel">
             <div className="panel-header">
-              <h2 className="panel-title">Top Barbers</h2>
+              <h2 className="panel-title">أفضل الحلاقين</h2>
             </div>
             {isLoading ? (
               <div className="skeleton skeleton-text" style={{ height: '100px' }}></div>
@@ -181,12 +181,12 @@ export default function SpectorDashboard() {
                   <li key={barber.barberId}>
                     <div>
                       <div className="list-item-main">{barber.barberName}</div>
-                      <div className="list-item-sub">{barber.bookingCount} Bookings</div>
+                      <div className="list-item-sub">{barber.bookingCount} حجوزات</div>
                     </div>
                     <div className="list-item-value">${barber.revenue.toLocaleString()}</div>
                   </li>
                 ))}
-                {topBarbers.length === 0 && <li className="list-item-sub">No data available</li>}
+                {topBarbers.length === 0 && <li className="list-item-sub">لا توجد بيانات متاحة</li>}
               </ul>
             )}
           </div>
@@ -194,7 +194,7 @@ export default function SpectorDashboard() {
           {/* Top Services */}
           <div className="dashboard-panel">
             <div className="panel-header">
-              <h2 className="panel-title">Top Services</h2>
+              <h2 className="panel-title">أفضل الخدمات</h2>
             </div>
             {isLoading ? (
               <div className="skeleton skeleton-text" style={{ height: '100px' }}></div>
@@ -204,12 +204,12 @@ export default function SpectorDashboard() {
                   <li key={service.serviceId}>
                     <div>
                       <div className="list-item-main">{service.serviceName}</div>
-                      <div className="list-item-sub">{service.requestCount} Requests</div>
+                      <div className="list-item-sub">{service.requestCount} طلبات</div>
                     </div>
                     <div className="list-item-value">${service.revenue.toLocaleString()}</div>
                   </li>
                 ))}
-                {topServices.length === 0 && <li className="list-item-sub">No data available</li>}
+                {topServices.length === 0 && <li className="list-item-sub">لا توجد بيانات متاحة</li>}
               </ul>
             )}
           </div>

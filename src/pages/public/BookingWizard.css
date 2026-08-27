@@ -166,6 +166,35 @@
   font-size: 1rem;
 }
 
+.form-group input[type="date"] {
+  position: relative;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23EDE7DC'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' /%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 1rem center;
+  background-size: 20px;
+}
+
+[dir="rtl"] .form-group input[type="date"], 
+body[dir="rtl"] .form-group input[type="date"] {
+  background-position: left 1rem center;
+}
+
+.form-group input[type="date"] {
+  background-position: left 1rem center;
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .form-group input:focus {
   outline: none;
   border-color: #A98B62;
@@ -213,6 +242,27 @@
 .no-slots {
   color: #EF5350;
   font-style: italic;
+}
+
+/* Step 3: Details */
+.coupon-toggle-container {
+  margin-top: 1rem;
+}
+
+.btn-text-link {
+  background: none;
+  border: none;
+  color: #A98B62;
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.btn-text-link:hover {
+  color: #c0a074;
 }
 
 /* Step 4: Summary */

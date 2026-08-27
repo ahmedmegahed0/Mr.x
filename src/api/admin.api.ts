@@ -296,15 +296,15 @@ export const getAdminServices = async (): Promise<AdminServiceDTO[]> => {
 };
 
 export const createAdminService = async (payload: CreateServiceRequest): Promise<AdminServiceDTO> => {
-  const { data } = await axiosInstance.post<AdminServiceDTO>('/api/services', payload);
+  const { data } = await axiosInstance.post<AdminServiceDTO>('/api/admin/services', payload);
   return data;
 };
 
 export const updateAdminService = async (id: number, payload: CreateServiceRequest): Promise<void> => {
-  await axiosInstance.put(`/api/services/${id}`, payload);
+  await axiosInstance.put(`/api/admin/services/${id}`, payload);
 };
 
 export const deleteAdminService = async (id: number): Promise<void> => {
-  await axiosInstance.delete(`/api/services/${id}`);
+  await axiosInstance.delete(`/api/admin/services/${id}`);
 };
 

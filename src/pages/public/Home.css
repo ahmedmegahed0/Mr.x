@@ -1,21 +1,21 @@
 /* MR.X — Full-Screen Cinematic Barber Panels */
 
 :root {
-  --mrx-bg:           #0B0A09;
-  --mrx-gold:         #C9A96E;
-  --mrx-gold-dark:    #A67C45;
-  --mrx-text-main:    #F5F0E8;
-  --mrx-text-muted:   #8A7E72;
-  --mrx-border:       rgba(255, 255, 255, 0.08);
+  --mrx-bg: #0B0A09;
+  --mrx-gold: #C9A96E;
+  --mrx-gold-dark: #A67C45;
+  --mrx-text-main: #F5F0E8;
+  --mrx-text-muted: #8A7E72;
+  --mrx-border: rgba(255, 255, 255, 0.08);
 
-  --mrx-light-bg:     #FBF9F5;
-  --mrx-light-surface:#F3EFEA;
+  --mrx-light-bg: #FBF9F5;
+  --mrx-light-surface: #F3EFEA;
   --mrx-light-border: #EAE5DC;
-  --mrx-light-text:   #181512;
-  --mrx-light-muted:  #4A443F;
+  --mrx-light-text: #181512;
+  --mrx-light-muted: #4A443F;
 
   --font-serif: var(--font-heading, 'Cairo', 'Playfair Display', serif);
-  --font-sans:  var(--font-body, 'Tajawal', 'Inter', sans-serif);
+  --font-sans: var(--font-body, 'Tajawal', 'Inter', sans-serif);
 }
 
 .home-page {
@@ -35,7 +35,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 140px 40px 20px; /* Increased padding significantly for navbar */
+  padding: 140px 40px 20px;
+  /* Increased padding significantly for navbar */
   overflow: hidden;
 }
 
@@ -45,15 +46,12 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(
-      to bottom,
+    linear-gradient(to bottom,
       rgba(11, 10, 9, 0.70) 0%,
       rgba(11, 10, 9, 0.45) 30%,
       rgba(11, 10, 9, 0.72) 65%,
-      rgba(11, 10, 9, 0.98) 100%
-    ),
-    url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1920&q=80')
-    center / cover no-repeat;
+      rgba(11, 10, 9, 0.98) 100%),
+    url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1920&q=80') center / cover no-repeat;
   z-index: 0;
 }
 
@@ -68,7 +66,10 @@
   pointer-events: none;
 }
 
-.mrx-hero-fullscreen > * { position: relative; z-index: 1; }
+.mrx-hero-fullscreen>* {
+  position: relative;
+  z-index: 1;
+}
 
 /* ── CENTERED TOP HEADER ── */
 .hero-top {
@@ -107,7 +108,8 @@
   max-width: 1300px;
   display: flex;
   align-items: stretch;
-  overflow: visible;           /* allow chair SVG to breathe */
+  overflow: visible;
+  /* allow chair SVG to breathe */
   margin: 20px 0 0;
   min-height: 0;
 }
@@ -122,13 +124,17 @@
 .loading-spinner {
   width: 36px;
   height: 36px;
-  border: 2px solid rgba(255,255,255,0.08);
+  border: 2px solid rgba(255, 255, 255, 0.08);
   border-top-color: var(--mrx-gold);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* ── CARDS ROW ── */
 .hero-cards-row {
@@ -147,33 +153,33 @@
   align-items: center;
   flex: 1;
   min-width: 0;
-  max-width: 300px;
-  flex-shrink: 0;
+  flex-shrink: 1;
   height: 100%;
 
   opacity: 0;
   animation: cardEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* ── INDIVIDUAL BARBER CARD ── */
 .barber-card {
   position: relative;
-  width: 100%;
-  flex: 1;               /* fills all remaining height in the seat */
-  min-height: 0;         /* allow shrink inside flex */
+  /* Make the card genuinely tall based on screen height */
+  height: 60vh;
+  max-height: 650px;
+  min-height: 400px;
+
+  /* Width adjusts automatically based on aspect ratio */
+  width: auto;
+  aspect-ratio: 2 / 3;
+
   border-radius: 18px;
   overflow: hidden;
   cursor: pointer;
-  
-  /* Force a tall portrait aspect ratio to keep it elegant */
-  aspect-ratio: 3 / 4;
-  /* max-height removed so it can grow as tall as it needs to */
 
   border: 1px solid rgba(255, 255, 255, 0.07);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 
   transition:
-    transform  0.5s cubic-bezier(0.2, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.2, 1, 0.3, 1),
     box-shadow 0.5s cubic-bezier(0.2, 1, 0.3, 1),
     border-color 0.4s ease;
 }
@@ -201,8 +207,10 @@
   display: flex;
   justify-content: center;
   margin-top: -4px;
-  flex-shrink: 0;           /* never compress the chair */
-  height: 110px;            /* fixed chair zone height */
+  flex-shrink: 0;
+  /* never compress the chair */
+  height: 110px;
+  /* fixed chair zone height */
   align-items: flex-start;
 }
 
@@ -212,20 +220,25 @@
   height: 110px;
   display: block;
   filter:
-    drop-shadow(0 6px 18px rgba(0, 0, 0, 0.65))
-    drop-shadow(0 0 8px rgba(201, 169, 110, 0.0));
+    drop-shadow(0 6px 18px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 8px rgba(201, 169, 110, 0.0));
   transition: filter 0.45s ease;
 }
 
 .barber-card-seat:hover .barber-chair-svg {
   filter:
-    drop-shadow(0 8px 24px rgba(0, 0, 0, 0.7))
-    drop-shadow(0 0 14px rgba(201, 169, 110, 0.18));
+    drop-shadow(0 8px 24px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 14px rgba(201, 169, 110, 0.18));
 }
 
 @keyframes cardEntrance {
-  from { opacity: 0; transform: translateY(30px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)    scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ── CARD IMAGE — fills entirely ── */
@@ -235,11 +248,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 20%;  /* show face & upper body perfectly */
+  object-position: center 20%;
+  /* show face & upper body perfectly */
   display: block;
   filter: brightness(0.85) saturate(0.85) contrast(1.05);
   transition:
-    filter    0.6s cubic-bezier(0.2, 1, 0.3, 1),
+    filter 0.6s cubic-bezier(0.2, 1, 0.3, 1),
     transform 0.6s cubic-bezier(0.2, 1, 0.3, 1);
 }
 
@@ -268,25 +282,21 @@
   display: flex;
   align-items: flex-end;
   /* strong bottom gradient for readability */
-  background: linear-gradient(
-    to top,
-    rgba(6, 5, 4, 0.96)   0%,
-    rgba(6, 5, 4, 0.72)   28%,
-    rgba(6, 5, 4, 0.25)   55%,
-    transparent           80%
-  );
+  background: linear-gradient(to top,
+      rgba(6, 5, 4, 0.96) 0%,
+      rgba(6, 5, 4, 0.72) 28%,
+      rgba(6, 5, 4, 0.25) 55%,
+      transparent 80%);
   transition: background 0.4s ease;
   z-index: 2;
 }
 
 .barber-card:hover .barber-card-overlay {
-  background: linear-gradient(
-    to top,
-    rgba(6, 5, 4, 0.98)  0%,
-    rgba(6, 5, 4, 0.82)  32%,
-    rgba(6, 5, 4, 0.30)  58%,
-    transparent          80%
-  );
+  background: linear-gradient(to top,
+      rgba(6, 5, 4, 0.98) 0%,
+      rgba(6, 5, 4, 0.82) 32%,
+      rgba(6, 5, 4, 0.30) 58%,
+      transparent 80%);
 }
 
 .barber-card-content {
@@ -320,9 +330,17 @@
 }
 
 @keyframes pulseGreen {
-  0%   { box-shadow: 0 0 0 0   rgba(16, 185, 129, 0.6); }
-  70%  { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-  100% { box-shadow: 0 0 0 0   rgba(16, 185, 129, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
 }
 
 .barber-name {
@@ -447,7 +465,9 @@
   margin: 0 auto;
 }
 
-.editorial-header { margin-bottom: 4rem; }
+.editorial-header {
+  margin-bottom: 4rem;
+}
 
 .section-title {
   display: flex;
@@ -509,7 +529,9 @@
   transition: color 0.3s ease;
 }
 
-.menu-item:hover .menu-item-name { color: var(--mrx-gold-dark); }
+.menu-item:hover .menu-item-name {
+  color: var(--mrx-gold-dark);
+}
 
 .menu-item-dots {
   flex-grow: 1;
@@ -552,8 +574,7 @@
   inset: 0;
   background:
     rgba(8, 7, 6, 0.93),
-    url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1920&q=80')
-    center / cover no-repeat;
+    url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1920&q=80') center / cover no-repeat;
   z-index: -1;
 }
 
@@ -598,30 +619,49 @@
   font-size: 0.85rem;
 }
 
-.text-center { text-align: center; }
+.text-center {
+  text-align: center;
+}
 
 /* ==========================================================================
    KEYFRAMES
    ========================================================================== */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ==========================================================================
    SERVICES CARD GRID (mobile-first upgrade)
    ========================================================================== */
 /* hidden on desktop — marquee only on mobile */
-.menu-cards-grid  { display: none; }
+.menu-cards-grid {
+  display: none;
+}
 
 /* ── Infinite Marquee ── */
 .menu-cards-marquee {
-  display: none;         /* shown only on mobile via media query */
+  display: none;
+  /* shown only on mobile via media query */
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
@@ -632,7 +672,10 @@
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
   mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
-.menu-cards-marquee::-webkit-scrollbar { display: none; }
+
+.menu-cards-marquee::-webkit-scrollbar {
+  display: none;
+}
 
 .menu-cards-track {
   display: flex;
@@ -652,8 +695,8 @@
   position: relative;
   overflow: hidden;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.3s ease;
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease;
   cursor: default;
 }
 
@@ -672,7 +715,9 @@
   border-color: rgba(166, 124, 69, 0.3);
 }
 
-.menu-card:hover::before { opacity: 1; }
+.menu-card:hover::before {
+  opacity: 1;
+}
 
 .menu-card-icon {
   font-size: 1.6rem;
@@ -744,7 +789,9 @@
 
 /* ── TABLET (1024px and below) ── */
 @media (max-width: 1023px) {
-  .mrx-hero-fullscreen { padding: 88px 20px 22px; }
+  .mrx-hero-fullscreen {
+    padding: 88px 20px 22px;
+  }
 
   .hero-cards-stage {
     overflow-x: auto;
@@ -754,7 +801,10 @@
     scrollbar-width: none;
     margin: 16px 0 14px;
   }
-  .hero-cards-stage::-webkit-scrollbar { display: none; }
+
+  .hero-cards-stage::-webkit-scrollbar {
+    display: none;
+  }
 
   .hero-cards-row {
     width: max-content;
@@ -777,9 +827,18 @@
     transform: translateY(0);
   }
 
-  .menu-columns { grid-template-columns: 1fr; gap: 0; }
-  .mrx-rituals  { padding: 90px 2rem; }
-  .mrx-cta      { padding: 90px 2rem; }
+  .menu-columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .mrx-rituals {
+    padding: 90px 2rem;
+  }
+
+  .mrx-cta {
+    padding: 90px 2rem;
+  }
 }
 
 /* ── LARGE MOBILE / SMALL TABLET (768px and below) ── */
@@ -787,7 +846,8 @@
 
   /* ─── HERO: Full-width swipeable cards ─── */
   .mrx-hero-fullscreen {
-    padding: 130px 0 16px; /* Greatly increased to clear scaled navbar logo */
+    padding: 130px 0 16px;
+    /* Greatly increased to clear scaled navbar logo */
     height: 100svh;
     justify-content: flex-start;
     gap: 0;
@@ -795,13 +855,22 @@
 
   .hero-top {
     padding: 0 20px;
-    margin-top: 80px; /* Pushes the text down below the navbar */
+    margin-top: 80px;
+    /* Pushes the text down below the navbar */
     margin-bottom: 12px;
     gap: 4px;
   }
 
-  .hero-eyebrow { font-size: 0.85rem; letter-spacing: 0.15em; font-weight: 700; }
-  .hero-headline { font-size: clamp(2.6rem, 11vw, 3.5rem); font-weight: 700; }
+  .hero-eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+  }
+
+  .hero-headline {
+    font-size: clamp(2.6rem, 11vw, 3.5rem);
+    font-weight: 700;
+  }
 
   /* Stage: centered snap carousel */
   .hero-cards-stage {
@@ -809,15 +878,20 @@
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
-    scroll-padding-inline: calc(50% - (42.5vw - 7px)); /* center each card */
+    scroll-padding-inline: calc(50% - (42.5vw - 7px));
+    /* center each card */
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     margin: 0;
     width: 100%;
-    padding: 0;              /* no side padding — row handles centering offset */
+    padding: 0;
+    /* no side padding — row handles centering offset */
     box-sizing: border-box;
   }
-  .hero-cards-stage::-webkit-scrollbar { display: none; }
+
+  .hero-cards-stage::-webkit-scrollbar {
+    display: none;
+  }
 
   .hero-cards-row {
     width: max-content;
@@ -841,12 +915,15 @@
 
   .barber-card {
     aspect-ratio: unset;
+    width: 100%;
     height: calc(100% - 0px);
     border-radius: 22px;
   }
 
   /* Hide the barber chair SVG on mobile */
-  .barber-chair-wrap { display: none; }
+  .barber-chair-wrap {
+    display: none;
+  }
 
   /* Book btn always visible */
   .btn-book-card {
@@ -856,9 +933,17 @@
     padding: 0.7rem 1.4rem;
   }
 
-  .barber-card-content { padding: 1.2rem 1.4rem 1.8rem; }
-  .barber-name { font-size: 1.3rem; }
-  .barber-role { font-size: 0.62rem; }
+  .barber-card-content {
+    padding: 1.2rem 1.4rem 1.8rem;
+  }
+
+  .barber-name {
+    font-size: 1.3rem;
+  }
+
+  .barber-role {
+    font-size: 0.62rem;
+  }
 
   /* Scroll indicator dots */
   .hero-scroll-indicator {
@@ -872,19 +957,36 @@
     padding-bottom: 0;
     margin-top: 6px;
   }
+
   .btn-browse-all {
     padding: 0.6rem 1.6rem;
     font-size: 0.72rem;
   }
 
   /* ─── SERVICES: Infinite marquee ─── */
-  .mrx-rituals         { padding: 72px 0 80px; }
-  .rituals-content     { padding: 0 1.2rem; }   /* keep title indented */
-  .menu-cards-marquee  { margin: 0 -1.2rem; }   /* but marquee goes full-bleed */
+  .mrx-rituals {
+    padding: 72px 0 80px;
+  }
+
+  .rituals-content {
+    padding: 0 1.2rem;
+  }
+
+  /* keep title indented */
+  .menu-cards-marquee {
+    margin: 0 -1.2rem;
+  }
+
+  /* but marquee goes full-bleed */
 
   /* Hide desktop list, show marquee */
-  .menu-columns       { display: none; }
-  .menu-cards-marquee { display: block; }
+  .menu-columns {
+    display: none;
+  }
+
+  .menu-cards-marquee {
+    display: block;
+  }
 
   /* Each card: fixed width for horizontal scroll */
   .menu-card {
@@ -894,45 +996,106 @@
     border-radius: 14px;
   }
 
-  .title-highlight { font-size: clamp(1.7rem, 6vw, 2.2rem); }
-  .editorial-header { margin-bottom: 2.5rem; }
+  .title-highlight {
+    font-size: clamp(1.7rem, 6vw, 2.2rem);
+  }
+
+  .editorial-header {
+    margin-bottom: 2.5rem;
+  }
 
   /* ─── CTA ─── */
-  .mrx-cta { padding: 80px 1.4rem; }
-  .cta-heading { font-size: clamp(1.6rem, 6vw, 2.4rem); }
-  .cta-btn-large { padding: 1rem 2.4rem; font-size: 0.84rem; }
+  .mrx-cta {
+    padding: 80px 1.4rem;
+  }
+
+  .cta-heading {
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
+  }
+
+  .cta-btn-large {
+    padding: 1rem 2.4rem;
+    font-size: 0.84rem;
+  }
 }
 
 /* ── SMALL MOBILE (480px and below) ── */
 @media (max-width: 480px) {
-  .mrx-hero-fullscreen { padding: 68px 0 12px; }
+  .mrx-hero-fullscreen {
+    padding: 68px 0 12px;
+  }
 
-  .hero-eyebrow  { font-size: 0.58rem; letter-spacing: 0.18em; }
-  .hero-headline { font-size: clamp(1.45rem, 7vw, 1.9rem); }
+  .hero-eyebrow {
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+  }
+
+  .hero-headline {
+    font-size: clamp(1.45rem, 7vw, 1.9rem);
+  }
 
   .barber-card-seat {
     min-width: calc(90vw - 20px);
     max-width: calc(90vw - 20px);
   }
 
-  .barber-card { border-radius: 18px; }
-  .barber-name { font-size: 1.15rem; }
+  .barber-card {
+    border-radius: 18px;
+  }
+
+  .barber-name {
+    font-size: 1.15rem;
+  }
 
   /* Full bleed marquee adjustments for small mobile */
-  .mrx-rituals { padding: 60px 0 72px; }
-  .rituals-content { padding: 0 1rem; }
-  .menu-cards-marquee { margin: 0 -1rem; }
+  .mrx-rituals {
+    padding: 60px 0 72px;
+  }
 
-  .menu-card { padding: 1.1rem 1rem 1.3rem; border-radius: 14px; width: 140px; }
-  .menu-card-name { font-size: 0.92rem; }
-  .menu-card-price { font-size: 0.78rem; padding: 0.25rem 0.6rem; }
+  .rituals-content {
+    padding: 0 1rem;
+  }
 
-  .title-highlight { font-size: clamp(1.5rem, 7vw, 1.9rem); }
+  .menu-cards-marquee {
+    margin: 0 -1rem;
+  }
 
-  .mrx-cta { padding: 70px 1rem; }
-  .cta-heading { font-size: clamp(1.4rem, 7vw, 1.9rem); }
-  .btn-primary-pill { padding: 0.9rem 2rem; font-size: 0.82rem; }
-  .cta-btn-large { padding: 0.9rem 2rem; font-size: 0.82rem; }
+  .menu-card {
+    padding: 1.1rem 1rem 1.3rem;
+    border-radius: 14px;
+    width: 140px;
+  }
+
+  .menu-card-name {
+    font-size: 0.92rem;
+  }
+
+  .menu-card-price {
+    font-size: 0.78rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .title-highlight {
+    font-size: clamp(1.5rem, 7vw, 1.9rem);
+  }
+
+  .mrx-cta {
+    padding: 70px 1rem;
+  }
+
+  .cta-heading {
+    font-size: clamp(1.4rem, 7vw, 1.9rem);
+  }
+
+  .btn-primary-pill {
+    padding: 0.9rem 2rem;
+    font-size: 0.82rem;
+  }
+
+  .cta-btn-large {
+    padding: 0.9rem 2rem;
+    font-size: 0.82rem;
+  }
 }
 
 /* ── VERY SMALL MOBILE (360px and below) ── */
@@ -942,8 +1105,13 @@
     max-width: calc(92vw - 16px);
   }
 
-  .hero-headline { font-size: 1.4rem; }
-  .barber-name   { font-size: 1rem; }
+  .hero-headline {
+    font-size: 1.4rem;
+  }
+
+  .barber-name {
+    font-size: 1rem;
+  }
 
   .btn-browse-all {
     padding: 0.55rem 1.3rem;

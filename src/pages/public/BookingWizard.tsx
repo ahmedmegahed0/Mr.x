@@ -35,7 +35,7 @@ export default function BookingWizard() {
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [couponCode, setCouponCode] = useState('');
-
+  const [showCouponInput, setShowCouponInput] = useState(false);
   // Fetch initial data
   useEffect(() => {
     if (!id) return;
@@ -315,15 +315,27 @@ export default function BookingWizard() {
                 placeholder="01001234567"
               />
             </div>
-            <div className="form-group">
-              <label>كوبون خصم (اختياري)</label>
-              <input 
-                type="text" 
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                placeholder="خصم10"
-              />
-            </div>
+            {showCouponInput ? (
+              <div className="form-group">
+                <label>كوبون خصم (اختياري)</label>
+                <input 
+                  type="text" 
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="خصم10"
+                />
+              </div>
+            ) : (
+              <div className="coupon-toggle-container">
+                <button 
+                  type="button" 
+                  className="btn-text-link" 
+                  onClick={() => setShowCouponInput(true)}
+                >
+                  لو معاك كود خصم اضغط هنا
+                </button>
+              </div>
+            )}
           </div>
         )}
 

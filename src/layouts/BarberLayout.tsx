@@ -61,7 +61,6 @@ export default function BarberLayout() {
               to="/" 
               onClick={closeSidebar}
               className="public-link"
-              target="_blank"
               style={{ color: '#d4af37', textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '0.75rem 1rem' }}
             >
               <span className="nav-icon">🌐</span> الموقع الرئيسي ↗

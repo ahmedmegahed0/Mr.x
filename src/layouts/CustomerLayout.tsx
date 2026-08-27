@@ -31,10 +31,10 @@ export default function CustomerLayout() {
             <li>
               <NavLink 
                 to="/" 
-                target="_blank"
+                className="customer-nav-link public-link"
                 style={{ color: '#d4af37', textDecoration: 'none', display: 'flex', alignItems: 'center' }}
               >
-                الموقع الرئيسي ↗
+                الموقع الرئيسي
               </NavLink>
             </li>
           </ul>

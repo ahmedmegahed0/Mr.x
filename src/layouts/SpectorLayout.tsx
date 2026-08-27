@@ -57,9 +57,8 @@ export default function SpectorLayout() {
               to="/" 
               onClick={() => setIsMobileMenuOpen(false)}
               className="spector-nav-link public-link"
-              target="_blank"
             >
-              الموقع الرئيسي ↗
+              الموقع الرئيسي
             </NavLink>
           </nav>
 

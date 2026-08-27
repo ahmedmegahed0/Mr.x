@@ -104,7 +104,6 @@ export default function AdminLayout() {
               to="/" 
               onClick={() => setIsMobileMenuOpen(false)}
               className="admin-nav-link public-link"
-              target="_blank"
             >
               الموقع الرئيسي ↗
             </NavLink>
