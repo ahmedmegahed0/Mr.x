@@ -121,7 +121,7 @@ export default function Home() {
         {/* — Centered Top Header — */}
         <div className="hero-top">
           <span className="hero-eyebrow">تأسس 2026 &bull; حلاقة على أصولها</span>
-          <h1 className="hero-headline">اختار<br />حلاقك</h1>
+          <h1 className="hero-headline">اختار حلاقك</h1>
         </div>
 
         {/* — Barber Panels — */}
