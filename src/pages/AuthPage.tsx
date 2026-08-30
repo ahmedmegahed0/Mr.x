@@ -78,7 +78,14 @@ export default function AuthPage() {
       setOtpSent(true);
       setTimer(OTP_COOLDOWN);
     } catch (err: any) {
-      setErrorMsg(parseApiError(err, 'مش قادرين نبعت كود التأكيد.'));
+      const parsedError = parseApiError(err, 'مش قادرين نبعت كود التأكيد.');
+      if (parsedError.includes('يوجد كود تحقق صالح بالفعل')) {
+        setOtpSent(true);
+        setTimer(0);
+        setErrorMsg('');
+      } else {
+        setErrorMsg(parsedError);
+      }
     } finally {
       setLoading(false);
     }
@@ -113,7 +120,12 @@ export default function AuthPage() {
       setTimer(OTP_COOLDOWN);
       setOtpValue('');
     } catch (err: any) {
-      setErrorMsg(parseApiError(err, 'مش قادرين نبعت الكود تاني.'));
+      const parsedError = parseApiError(err, 'مش قادرين نبعت الكود تاني.');
+      if (parsedError.includes('يوجد كود تحقق صالح بالفعل')) {
+        setErrorMsg('الكود اللي اتبعتلك قبل كده لسه شغال، تقدر تستخدمه.');
+      } else {
+        setErrorMsg(parsedError);
+      }
     } finally {
       setLoading(false);
     }
@@ -170,6 +182,10 @@ export default function AuthPage() {
             <label className="mrx-label" htmlFor="otp-input">كود التأكيد</label>
             <p className="mrx-auth-subtitle" style={{ marginBottom: '0.5rem' }}>
               بعتنا كود على <strong>{email}</strong>
+              <br />
+              <span style={{ fontSize: '0.85rem', color: 'var(--mrx-text-secondary)', display: 'block', marginTop: '4px' }}>
+                (لو سجلت دخول قريب، الكود القديم لسه شغال لمدة 12 ساعة وتقدر تستخدمه تاني)
+              </span>
             </p>
             <input
               id="otp-input"
